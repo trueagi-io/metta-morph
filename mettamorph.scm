@@ -2,7 +2,7 @@
 (import amb)
 (import amb-extras)
 (import matchable)
-;(import mini-kanren)
+(import mini-kanren)
 
 (define (print-all xs)
   (display "[")
@@ -51,8 +51,6 @@
     ((_ args ...)
      (print-all (amb-collect args ...)))))
 
-(define == =)
-
 (define-syntax LetMetta
   (syntax-rules ()
     ((_ varval body)
@@ -82,3 +80,39 @@
      (if (eqv? key atom)
          (begin result1 result2 ...)
          (CaseMetta key (clause clauses ...))))))
+
+(define &self '())
+
+(define-syntax define-atoms
+  (syntax-rules ()
+   ((_ argi ...)
+    (list (set! argi 'argi) ...))))
+
+(define-syntax add-atom
+  (syntax-rules ()
+    ((_ space (atomi ...))
+     (begin
+           (set! space (cons (list 'atomi ...) space))
+           (define-atoms atomi ...)))))
+
+(define === ==) ;microkanren constructs use ===
+(define == =)   ;allow use == for MeTTa compatibility
+
+(define (conso x L Lx)
+        (=== Lx (cons x L)))
+
+(define (symbolo s)
+        (lambda (s/c)
+                (let ((s (walk s (car s/c))))
+                     (if (or (symbol? s) (list? s)) ;added: list
+                         (unit s/c)
+                         mzero))))
+
+(define-syntax MatchMetta
+  (syntax-rules ()
+    ((_ space (pati ...) ret)
+     (amb1 (run* (ret)
+                 (fresh (KB)
+                        (conso (list pati ...) space KB)
+                        (membero (list pati ...) KB))
+                        (symbolo ret))))))

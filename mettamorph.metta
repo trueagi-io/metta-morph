@@ -3,3 +3,10 @@
 (= (If False $then) ())
 (: If (-> Bool Atom Atom Atom))
 (= (If $cond $then $else) (if $cond $then $else))
+
+(: begin (-> Expression %Undefined%))
+(= (begin $x) (superpose ($x)))
+(: begin (-> Expression Expression %Undefined%))
+(= (begin $x $y) (superpose ($x $y)))
+(: begin (-> Expression Expression Expression %Undefined%))
+(= (begin $x $y $z) (superpose ($x $y $z)))

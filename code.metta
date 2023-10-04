@@ -36,6 +36,18 @@
 
 ;<EVALUATIONS>
 
+;(superpose ((add-atom &self (man mortal)) (match &self ($Q mortal) $Q)))
+
+;(collapse (superpose ((add-atom &self (man mortal)) (match &self ($Q mortal) $Q))))
+
+
+(begin
+(add-atom &self (man mortal))
+(match &self ($1 mortal) $1))
+
+;(add-atom &self (man mortal))
+
+;(superpose (list (add-atom &self (man mortal)) (match &self ($Q mortal) $Q)))
 ;(let ($f $c) (list 1.0 0.9) (list $f $c))
 
 
@@ -52,7 +64,7 @@
 ;      (superpose (list (list 1 2)
 ;      (collapse (superpose (list 3 4 (f 5)))))))
       
-(Truth_Deduction (list 1.0 0.9) (list 1.0 0.9))
+;(Truth_Deduction (list 1.0 0.9) (list 1.0 0.9))
 
 ;(list 1 2)
 
@@ -72,10 +84,8 @@
 
 ;(collapse (superpose (list 1 2)))
 
-
 ;(facF 10)
 
-;(display (let ((x 3)) x))
 ;(let $x 3 $x)
 ;(let (($x 3)) $x)
 
@@ -85,7 +95,7 @@
 ;(let $x 34 (case $x ((3 42) 
 ;                     ($else (wuzaL 3 (list 1 2))))))
 
-;(let* ((($a $b) (1 3))) $b)
+;(let* ((($a $b) (list 1 3))) $b)
 
 ;(let* (($a 1) ($b 3)) $b)
 
