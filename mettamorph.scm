@@ -1,8 +1,9 @@
 ;CHICKEN
-(import amb)
-(import amb-extras)
-(import matchable)
-(import mini-kanren)
+(import srfi-13) ;strings
+(import amb)     ;superpose
+(import amb-extras) ;superpose
+(import matchable) ;let/case
+(import mini-kanren) ;match
 
 (define (print-all xs)
   (display "[")
@@ -110,9 +111,17 @@
 
 (define-syntax MatchMetta
   (syntax-rules ()
+    ((_ space (pati ...) (reti ...))
+     (let ((value (amb1 (run* (Q)
+                      (fresh (KB)
+                             (conso (list (if (string-prefix? "$" (symbol->string 'pati)) Q pati) ...) space KB)
+                             (membero (list (if (string-prefix? "$" (symbol->string 'pati)) Q pati) ...) KB))
+                             (symbolo Q)))))
+                (cdr (list (if (string-prefix? "$" (symbol->string 'reti)) value reti) ...))))
     ((_ space (pati ...) ret)
-     (amb1 (run* (ret)
-                 (fresh (KB)
-                        (conso (list pati ...) space KB)
-                        (membero (list pati ...) KB))
-                        (symbolo ret))))))
+     (let ((value (amb1 (run* (Q)
+                      (fresh (KB)
+                             (conso (list (if (string-prefix? "$" (symbol->string 'pati)) Q pati) ...) space KB)
+                             (membero (list (if (string-prefix? "$" (symbol->string 'pati)) Q pati) ...) KB))
+                             (symbolo Q)))))
+                value))))

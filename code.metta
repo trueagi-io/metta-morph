@@ -33,17 +33,15 @@
 ;   (let (Event ($Term1 $Truth1) ($Time1 $Evidence1 $EPrio1)) (Projection $Ev1 $Time2)
 ;        (Event (($Term1 &/ $Term2) (Truth_Intersection $Truth1 $Truth2)) ($Time2 (TupleConcat $Evidence1 $Evidence2) (0 0.0)))))
 
-
 ;<EVALUATIONS>
 
 ;(superpose ((add-atom &self (man mortal)) (match &self ($Q mortal) $Q)))
 
 ;(collapse (superpose ((add-atom &self (man mortal)) (match &self ($Q mortal) $Q))))
 
-
 (begin
 (add-atom &self (man mortal))
-(match &self ($1 mortal) $1))
+(match &self ($1 mortal) (list mortal $1)))
 
 ;(add-atom &self (man mortal))
 
