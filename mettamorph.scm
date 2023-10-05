@@ -126,12 +126,11 @@
             (refcounter -1)
             (varindices '())
             (value (amb1 (run* (Q)
-                               (fresh ($0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $10)  ; TODO how can we get around defining the var list over and over again?
+                               (fresh ($0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $10)
                                       (let ((vars (list $0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $10)))
                                            (fresh (KB)
                                                   (conso (list (if (string-prefix? "$" (symbol->string 'pati))
                                                                    (begin (set! counter1 (+ counter1 1))
-                                                                          ;TODO also assign variable to counter so we can later retrieve the right index based on var name rather than index
                                                                           (set! varindices (cons (cons (symbol->string 'pati) counter1) varindices))
                                                                           (list-ref vars counter1)) pati) ...) space KB)
                                                   (membero (list (if (string-prefix? "$" (symbol->string 'pati))
