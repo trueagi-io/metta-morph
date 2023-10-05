@@ -41,7 +41,7 @@
 
 (begin
 (add-atom &self (man mortal))
-(match &self ($1 mortal) (list mortal $1)))
+(match &self ($a mortal) (mortal $a)))
 
 ;(add-atom &self (man mortal))
 
@@ -55,7 +55,7 @@
 
 ;(let $T (list 1.0 0.9) (let* (($f1 $c1) (1.0 0.9)) $f1))
 
-;(range 1 5)
+;(range 1 50)
 
 ;(list (facF 100)
 ;      (wuza 5)
