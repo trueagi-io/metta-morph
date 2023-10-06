@@ -41,6 +41,7 @@
 
 (sequential (
 (add-atom &self (man mortal))
+(add-atom &self (man2 mortal))
 (match &self ($a mortal) (mortal $a))))
 
 ;(add-atom &self (man mortal))

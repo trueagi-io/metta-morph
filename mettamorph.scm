@@ -1,9 +1,10 @@
-;CHICKEN
-(import srfi-13) ;strings
-(import amb)     ;superpose
-(import amb-extras) ;superpose
-(import matchable) ;let/case
-(import mini-kanren) ;match
+;run with CHICKEN Scheme!
+(import srfi-13) ;string support in Scheme
+(import amb)     ;amb to implement superpose nesting behavior
+(import amb-extras) ;amb1 to implement superpose
+(import matchable) ;let/case constructs with list deconstruction
+(import mini-kanren) ;match with true unification
+(import (chicken string)) ;->string function to convert scheme expressions to string
 
 (define (print-all xs)
   (display "[")
@@ -36,16 +37,43 @@
     ((_ arg)
      arg)))
 
-(define-syntax =
+(define (token-contains contained token)
+    (string-contains (->string token) contained))
+
+(define-syntax define-atoms
   (syntax-rules ()
-    ((_ (name (list $f1 $c1) (list $f2 $c2)) body) ;TODO generalize
-     (define (name $T1 $T2)
-        (match-let* ((($f1 $c1) $T1)
-                     (($f2 $c2) $T2))
-                    body)))
-    ((_ (name xi ...) body)
-     (define (name xi ...)
-             body))))
+    ((_ argi ...)
+     (list (if (not (token-contains "$" 'argi)) (set! argi 'argi)) ...))))
+
+(define-syntax =
+  (syntax-rules () ;hard to generalize further but sufficiently powerful already
+    ((_ (name (list args1 ...)) body) ;deconstruct 1 list argument
+     (begin (define (name $T1)
+                    (match-let* (((args1 ...) $T1)) body))
+            (define-atoms args1 ...)))
+    ((_ (name (list args1 ...) (list args2 ...)) body) ;deconstruct 2 list arguments
+     (begin (define (name $T1 $T2)
+                    (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))
+            (define-atoms args1 ... args2 ...)))
+    ((_ (name (list args1 ...) (list args2 ...) (list args3 ...)) body) ;deconstruct 3 list arguments
+     (begin (define (name $T1 $T2 $T3)
+                    (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))
+            (define-atoms args1 ... args2 ... args3 ...)))
+    ((_ (name (list args1 ...) xi ...) body) ;deconstruct 1 list argument with params
+     (begin (define (name $T1 xi ...)
+                    (match-let* (((args1 ...) $T1)) body))
+            (define-atoms args1 ... xi ...)))
+    ((_ (name (list args1 ...) (list args2 ...) xi ...) body) ;deconstruct 2 list arguments with params
+     (begin (define (name $T1 $T2 xi ...)
+                    (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))
+            (define-atoms args1 ... args2 ... xi ...)))
+    ((_ (name (list args1 ...) (list args2 ...) (list args3 ...) xi ...) body) ;deconstruct 3 list arguments with params
+     (begin (define (name $T1 $T2 $T3 xi ...)
+                    (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))
+            (define-atoms args1 ... args2 ... args3 ... xi ...)))
+    ((_ (name xi ...) body) ;normal function definition with flattened params
+     (begin (define (name xi ...) body)
+            (define-atoms xi ...)))))
 
 (define-syntax !
   (syntax-rules ()
@@ -83,11 +111,6 @@
          (CaseMetta key (clause clauses ...))))))
 
 (define &self '())
-
-(define-syntax define-atoms
-  (syntax-rules ()
-   ((_ argi ...)
-    (list (set! argi 'argi) ...))))
 
 (define-syntax add-atom
   (syntax-rules ()
