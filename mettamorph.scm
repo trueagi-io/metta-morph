@@ -147,3 +147,9 @@
                              (membero (list (if (string-prefix? "$" (symbol->string 'pati)) Q pati) ...) KB))
                              (symbolo Q)))))
                 value))))
+
+(define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
+  (syntax-rules ()        ;as procedural sequential execution demands :begin"
+    ((_ (expr ...))         ;that's why this construct is defined here instead
+     (begin
+       expr ...))))

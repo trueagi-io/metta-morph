@@ -39,9 +39,9 @@
 
 ;(collapse (superpose ((add-atom &self (man mortal)) (match &self ($Q mortal) $Q))))
 
-(begin
+(sequential (
 (add-atom &self (man mortal))
-(match &self ($a mortal) (mortal $a)))
+(match &self ($a mortal) (mortal $a))))
 
 ;(add-atom &self (man mortal))
 
