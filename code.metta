@@ -110,3 +110,6 @@
 
 ;(if (== (let $c 21 (let* ((($a $b) ($c 3))) $b)) 3)
 ;    "yes" "no")
+
+
+;(collapse (case (== 1 2) ((True 42))))

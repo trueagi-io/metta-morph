@@ -1,4 +1,5 @@
 ;run with CHICKEN Scheme!
+(import srfi-1) ;filter
 (import srfi-13) ;string support in Scheme
 (import amb)     ;amb to implement superpose nesting behavior
 (import amb-extras) ;amb1 to implement superpose
@@ -20,10 +21,13 @@
        (print-items (cdr xs)))))
   (print-items xs))
 
+(define (notUnspecified x)
+        (not (== x (if #f 42))))
+
 (define-syntax collapse
   (syntax-rules ()
     ((_ args)
-     (amb-collect args))))
+     (filter notUnspecified (amb-collect args)))))
 
 (define-syntax superpose
   (syntax-rules ()
@@ -120,7 +124,7 @@
            (define-atoms atomi ...)))))
 
 (define === ==) ;microkanren constructs use ===
-(define == =)   ;allow use == for MeTTa compatibility
+(define == equal?)   ;allow use == for MeTTa compatibility
 
 (define (conso x L Lx)
         (=== Lx (cons x L)))
