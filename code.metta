@@ -91,6 +91,10 @@
 
 ;(let $x 3 (if (> $x (superpose (list 2 3))) 1 0))
 
+;(let $x 34 (case $x
+;                 ((3 42)
+;                 ($else $else))))
+
 ;(let $x 34 (case $x ((3 42) 
 ;                     ($else (wuzaL 3 (list 1 2))))))
 

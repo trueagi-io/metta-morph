@@ -8,6 +8,7 @@
 (import matchable) ;let/case constructs with list deconstruction
 (import mini-kanren) ;match with true unification
 (import (chicken string)) ;->string function to convert scheme expressions to string
+(import bindings) ;bind-case with deconstruction
 
 (define (print-all xs)
   (display "[")
@@ -113,19 +114,8 @@
 
 (define-syntax CaseMetta
   (syntax-rules (else)
-    ((_ key
-        ((else result1 result2 ...)))
-     (begin result1 result2 ...))
-    ((_ key
-        ((atom result1 result2 ...)))
-     (if (eqv? key atom)
-         (begin result1 result2 ...)))
-    ((_ key
-        ((atom result1 result2 ...)
-         clause clauses ...))
-     (if (eqv? key atom)
-         (begin result1 result2 ...)
-         (CaseMetta key (clause clauses ...))))))
+    ((_ var ((pat body) ...))
+     (handle-exceptions exn (if #f 42) (bind-case var (pat body) ...)))))
 
 (define &self '())
 
