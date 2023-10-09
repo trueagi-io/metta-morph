@@ -56,7 +56,7 @@
 (define-syntax define-partial
   (syntax-rules ()
     ((_ (name xi ...) body)
-     (begin (define (name xi ...) (handle-exceptions exn '() body))
+     (begin (define (name xi ...) (handle-exceptions exn (if #f 42) body))
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
                 (hash-table-set! functions 'name (list name)))
