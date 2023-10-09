@@ -30,7 +30,7 @@
 (define-syntax collapse
   (syntax-rules ()
     ((_ args)
-     (filter notUnspecified (amb-collect args)))))
+     (filter notUnspecified (amb-collect (handle-exceptions exn (if #f 42) args))))))
 
 (define-syntax superpose
   (syntax-rules ()
