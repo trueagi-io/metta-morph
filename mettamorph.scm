@@ -183,3 +183,10 @@
     ((_ (expr ...))       ;that's why this construct is defined here instead
      (begin
        expr ...))))
+
+(define-syntax If
+  (syntax-rules ()
+    ((_ condition thenbody elsebody)
+        (if condition thenbody elsebody))
+    ((_ condition thenbody)
+        (if condition thenbody '()))))
