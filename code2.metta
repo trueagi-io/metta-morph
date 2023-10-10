@@ -11,7 +11,7 @@
           ($f (/ (+ (* $w1 $f1) (* $w2 $f2)) $w)) ($c (Truth_w2c $w)))
           (list (min 1.00 $f) (min 0.99 (max (max $c $c1) $c2)))))
 
-(define-atoms a b c --> ==> x Sentence garfield sky blue cat dog)
+(define-atoms a b c d e f g h i j k l m n o p q r s t u v w x y z --> ==> Sentence garfield sky blue cat dog)
 ;; Inference rules
 ; NAL-1/5 (selected subset)
 (= (|- (list $T $T1) (list $T $T2)) (list $T (Truth_Revision $T1 $T2)))
@@ -86,20 +86,23 @@
 
 ;pose a question of a certain term to the system on some knowledge base
 (= (Question $kb $term $steps)
-   (let (Sentence ($Term $Truth) $Ev) (superpose (Derive $kb 1 $steps)) 
-        (if (== $Term $term)
-            (list Sentence (list $Term $Truth) $Ev))))
-   ;(BestCandidate ConfidenceRank Nil (collapse (Derive $kb 1 $steps))))
+   (BestCandidate ConfidenceRank () (collapse (let $x (Derive $kb 1 $steps) 
+                                                   (case (superpose $x)
+                                                         (((Sentence ($T $TV) $Ev) (case (== $T $term) 
+                                                                                         ((True (list $TV $Ev)))))))))))
+
 
 ;<EVALUATIONS>
 
-;(Question (list (list Sentence (list (list garfield --> cat) (list 1.0 0.9)) (list 1)) 
-;                (list Sentence (list (list cat --> blue) (list 1.0 0.9)) (list 2))
-;               ;(list Sentence (list (list dog --> blue) (list 1.0 0.9)) (list 3))
-;          )
-;          (list garfield --> blue) 1)
+(Question (list (list Sentence (list (list a --> b) (list 1.0 0.9)) (list 1)) 
+                (list Sentence (list (list b --> c) (list 1.0 0.9)) (list 2))
+                (list Sentence (list (list c --> d) (list 1.0 0.9)) (list 3))
+                (list Sentence (list (list d --> e) (list 1.0 0.9)) (list 4))
+                (list Sentence (list (list e --> f) (list 1.0 0.9)) (list 5))
+          )
+          (list a --> f) 3)
 
-;(collapse (BestCandidate ConfidenceRank Nil (list (list (list 1.0 0.9) (list 0)) 
+;(BestCandidate ConfidenceRank Nil (list (list (list 1.0 0.9) (list 0)) 
 ;                                        (list (list 1.0 0.9) (list 0))
 ;                                        (list (list 1.0 0.9) (list 0))
 ;                                        (list (list 1.0 0.9) (list 0))
@@ -107,7 +110,7 @@
 ;                                        (list (list 1.0 0.9) (list 0))
 ;                                        (list (list 1.0 0.9) (list 0))
 ;                                        (list (list 1.0 0.9) (list 0))
-;                                        (list (list 1.0 0.9) (list 0)))))
+;                                        (list (list 1.0 0.9) (list 0))))
 
 ;(ConfidenceRank (list (list 1.0 0.9) (list 0)))
 ;(define Nil '())
