@@ -30,7 +30,7 @@
 (define-syntax collapse
   (syntax-rules ()
     ((_ args)
-     (filter notUnspecified (amb-collect (handle-exceptions exn (if #f 42) args))))))
+     (filter notUnspecified (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
 
 (define-syntax superpose
   (syntax-rules ()
@@ -57,7 +57,9 @@
 (define-syntax define-partial
   (syntax-rules ()
     ((_ (name xi ...) body)
-     (begin (define (name xi ...) (handle-exceptions exn (if #f 42) body))
+     (begin (define (name xi ...) (if (and (or (not (equal? 'xi 'Nil)) (equal? xi '())) ...)
+                                      (handle-exceptions exn ((amb-failure-continuation)) body)
+                                      ((amb-failure-continuation))))
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
                 (hash-table-set! functions 'name (list name)))
@@ -115,7 +117,7 @@
 (define-syntax CaseMetta
   (syntax-rules (else)
     ((_ var ((pat body) ...))
-     (handle-exceptions exn (if #f 42) (bind-case var (pat body) ...)))))
+     (handle-exceptions exn ((amb-failure-continuation)) (bind-case var (pat body) ...)))))
 
 (define &self '())
 

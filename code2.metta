@@ -11,7 +11,7 @@
           ($f (/ (+ (* $w1 $f1) (* $w2 $f2)) $w)) ($c (Truth_w2c $w)))
           (list (min 1.00 $f) (min 0.99 (max (max $c $c1) $c2)))))
 
-(define-atoms a b c --> ==> x Sentence garfield sky blue cat)
+(define-atoms a b c --> ==> x Sentence garfield sky blue cat dog)
 ;; Inference rules
 ; NAL-1/5 (selected subset)
 (= (|- (list $T $T1) (list $T $T2)) (list $T (Truth_Revision $T1 $T2)))
@@ -77,23 +77,48 @@
                 (BestCandidate $evaluateCandidateFunction $bestCandidate $tail)))))
 
 ;candidate evaluation based on confidence
-(= (ConfidenceRank (($f $c) $Ev)) $c)
+(= (ConfidenceRank (list ($f $c) $Ev)) $c)
 (= (ConfidenceRank Nil) 0)
+;(= (ConfidenceRank $List)
+;   (if (== $List Nil)
+;       0
+;       (cdr-atom (cdr-atom $List))))
 
 ;pose a question of a certain term to the system on some knowledge base
 (= (Question $kb $term $steps)
-   (BestCandidate ConfidenceRank Nil (collapse (let $x (Derive $kb 1 $steps) 
-                                                    (case (superpose $x)
-                                                          (((Sentence ($T $TV) $Ev) (case (== $T $term)
-                                                                                          ((True ($TV $Ev)))))))))))
-
-
+   (let (Sentence ($Term $Truth) $Ev) (superpose (Derive $kb 1 $steps)) 
+        (if (== $Term $term)
+            (list Sentence (list $Term $Truth) $Ev))))
+   ;(BestCandidate ConfidenceRank Nil (collapse (Derive $kb 1 $steps))))
 
 ;<EVALUATIONS>
 
-(Derive (list (list Sentence (list (list garfield --> cat) (list 1.0 0.9)) (list 1)) 
-              (list Sentence (list (list cat --> blue) (list 1.0 0.9)) (list 2))) 1 
-              8)
+;(Question (list (list Sentence (list (list garfield --> cat) (list 1.0 0.9)) (list 1)) 
+;                (list Sentence (list (list cat --> blue) (list 1.0 0.9)) (list 2))
+;               ;(list Sentence (list (list dog --> blue) (list 1.0 0.9)) (list 3))
+;          )
+;          (list garfield --> blue) 1)
+
+;(collapse (BestCandidate ConfidenceRank Nil (list (list (list 1.0 0.9) (list 0)) 
+;                                        (list (list 1.0 0.9) (list 0))
+;                                        (list (list 1.0 0.9) (list 0))
+;                                        (list (list 1.0 0.9) (list 0))
+;                                        (list (list 1.0 0.9) (list 0))
+;                                        (list (list 1.0 0.9) (list 0))
+;                                        (list (list 1.0 0.9) (list 0))
+;                                        (list (list 1.0 0.9) (list 0))
+;                                        (list (list 1.0 0.9) (list 0)))))
+
+;(ConfidenceRank (list (list 1.0 0.9) (list 0)))
+;(define Nil '())
+;(define Nil '())
+;(ConfidenceRank Nil)
+
+;(Derive (list (list Sentence (list (list garfield --> cat) (list 1.0 0.9)) (list 1)) 
+;              (list Sentence (list (list cat --> blue) (list 1.0 0.9)) (list 2))
+;              ;(list Sentence (list (list dog --> blue) (list 1.0 0.9)) (list 3))
+;              ) 1 
+;              4)
               
 ;(let $beliefs (list (list Sentence (list (list garfield --> cat) (list 1.0 0.9)) (list 1)) 
 ;              (list Sentence (list (list cat --> blue) (list 1.0 0.9)) (list 2)))              
