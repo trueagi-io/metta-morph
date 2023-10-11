@@ -1,4 +1,4 @@
-(define-atoms ExtSet IntSet a b c d e f g h i j k l m n o p q r s t u v w x y z --> ==> like Sentence garfield sky blue cat dog artist)
+(define-atoms ExtSet IntSet a b c d e f g h i j k l m n p q r s t u v w x y z --> ==> like Sentence garfield sky blue cat dog artist)
 (= (TupleConcat $Ev1 $Ev2) (collapse (superpose (list (superpose $Ev1) (superpose $Ev2)))))
 
 ;; Truth functions

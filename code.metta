@@ -58,10 +58,10 @@
 
 ;(range 1 50)
 
-;(list (facF 100)
-;      (wuza 5)
-;      (superpose (list (list 1 2)
-;      (collapse (superpose (list 3 4 (f 5)))))))
+(list ;(facF 100)
+      (wuza 5)
+      (superpose (list (list 1 2)
+      (collapse (superpose (list 3 4 (f 5)))))))
       
 ;(Truth_Deduction (list 1.0 0.9) (list 1.0 0.9))
 
