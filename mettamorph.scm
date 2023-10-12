@@ -9,6 +9,7 @@
 (import mini-kanren) ;match with true unification
 (import (chicken string)) ;->string function to convert scheme expressions to string
 (import bindings) ;bind-case with deconstruction
+(import match-generics) ;a proper define for scheme
 
 (define (print-all xs)
   (display "[")
@@ -44,20 +45,12 @@
     ((_ arg)
      arg)))
 
-(define (token-contains contained token)
-    (string-contains (->string token) contained))
-
-(define-syntax define-atoms
-  (syntax-rules ()
-    ((_ argi ...)
-     (list (if (not (token-contains "$" 'argi)) (set! argi 'argi)) ...))))
-
 (define functions (make-hash-table))
 
 (define-syntax define-partial
   (syntax-rules ()
     ((_ (name xi ...) body)
-     (begin (define (name xi ...) (if (and (or (not (equal? 'xi 'Nil)) (equal? xi '())) ...)
+     (begin (define-dx (name xi ...) (if (and (or (not (equal? 'xi 'Nil)) (equal? xi '())) ...)
                                       (handle-exceptions exn ((amb-failure-continuation)) body)
                                       ((amb-failure-continuation))))
             (if (hash-table-exists? functions 'name)
@@ -67,33 +60,26 @@
 
 (define-syntax =
   (syntax-rules () ;hard to generalize further but sufficiently powerful already
-    ((_ (name (list args1 ...)) body) ;deconstruct 1 list argument
+    ((_ (name (args1 ...)) body) ;deconstruct 1 list argument
      (begin (define-partial (name $T1)
-                            (match-let* (((args1 ...) $T1)) body))
-            (define-atoms args1 ...)))
-    ((_ (name (list args1 ...) (list args2 ...)) body) ;deconstruct 2 list arguments
+                            (match-let* (((args1 ...) $T1)) body))))
+    ((_ (name (args1 ...) (args2 ...)) body) ;deconstruct 2 list arguments
      (begin (define-partial (name $T1 $T2)
-                            (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))
-            (define-atoms args1 ... args2 ...)))
-    ((_ (name (list args1 ...) (list args2 ...) (list args3 ...)) body) ;deconstruct 3 list arguments
+                            (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))))
+    ((_ (name (args1 ...) (args2 ...) (args3 ...)) body) ;deconstruct 3 list arguments
      (begin (define-partial (name $T1 $T2 $T3)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))
-            (define-atoms args1 ... args2 ... args3 ...)))
-    ((_ (name (list args1 ...) xi ...) body) ;deconstruct 1 list argument with params
+                            (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))))
+    ((_ (name (args1 ...) xi ...) body) ;deconstruct 1 list argument with params
      (begin (define-partial (name $T1 xi ...)
-                            (match-let* (((args1 ...) $T1)) body))
-            (define-atoms args1 ... xi ...)))
-    ((_ (name (list args1 ...) (list args2 ...) xi ...) body) ;deconstruct 2 list arguments with params
+                            (match-let* (((args1 ...) $T1)) body))))
+    ((_ (name (args1 ...) (args2 ...) xi ...) body) ;deconstruct 2 list arguments with params
      (begin (define-partial (name $T1 $T2 xi ...)
-                            (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))
-            (define-atoms args1 ... args2 ... xi ...)))
-    ((_ (name (list args1 ...) (list args2 ...) (list args3 ...) xi ...) body) ;deconstruct 3 list arguments with params
+                            (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))))
+    ((_ (name (args1 ...) (args2 ...) (args3 ...) xi ...) body) ;deconstruct 3 list arguments with params
      (begin (define-partial (name $T1 $T2 $T3 xi ...)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))
-            (define-atoms args1 ... args2 ... args3 ... xi ...)))
+                            (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))))
     ((_ (name xi ...) body) ;normal function definition with flattened params
-           (begin (define-partial (name xi ...) body)
-                  (define-atoms xi ...)))))
+     (define-partial (name xi ...) body))))
 
 (define-syntax !
   (syntax-rules ()

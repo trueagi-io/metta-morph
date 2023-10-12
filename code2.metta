@@ -1,56 +1,58 @@
-(define-atoms ExtSet IntSet a b c d e f g h i j k l m n p q r s t u v w x y z --> ==> like Sentence garfield sky blue cat dog artist)
 (= (TupleConcat $Ev1 $Ev2) (collapse (superpose (list (superpose $Ev1) (superpose $Ev2)))))
 
 ;; Truth functions
 (= (Truth_c2w $c) (/ $c (- 1 $c)))
 (= (Truth_w2c $w) (/ $w (+ $w 1)))
-(= (Truth_Deduction (list $f1 $c1) (list $f2 $c2)) (list (* $f1 $f2) (* (* $f1 $f2) (* $c1 $c2))))
-(= (Truth_Abduction (list $f1 $c1) (list $f2 $c2)) (list $f2 (Truth_w2c (* (* $f1 $c1) $c2))))
+(= (Truth_Deduction ($f1 $c1) ($f2 $c2)) (list (* $f1 $f2) (* (* $f1 $f2) (* $c1 $c2))))
+(= (Truth_Abduction ($f1 $c1) ($f2 $c2)) (list $f2 (Truth_w2c (* (* $f1 $c1) $c2))))
 (= (Truth_Induction $T1 $T2) (Truth_Abduction $T2 $T1))
-(= (Truth_Revision (list $f1 $c1) (list $f2 $c2))
+(= (Truth_Revision ($f1 $c1) ($f2 $c2))
    (let* (($w1 (Truth_c2w $c1)) ($w2 (Truth_c2w $c2)) ($w  (+ $w1 $w2))
           ($f (/ (+ (* $w1 $f1) (* $w2 $f2)) $w)) ($c (Truth_w2c $w)))
           (list (min 1.00 $f) (min 0.99 (max (max $c $c1) $c2)))))
 
 ;; Inference rules
 ; NAL-1/5 (selected subset)
-(= (|- (list $T $T1) (list $T $T2)) (list $T (Truth_Revision $T1 $T2)))
-(= (|- (list ($a $-->/==> $b) $T1) (list ($b $-->/==> $c) $T2)) (list (list $a $-->/==> $c) (Truth_Deduction $T1 $T2)))
-(= (|- (list ($a $-->/==> $b) $T1) (list ($a $-->/==> $c) $T2)) (list (list $c $-->/==> $b) (Truth_Induction $T1 $T2)))
-(= (|- (list ($a $-->/==> $c) $T1) (list ($b $-->/==> $c) $T2)) (list (list $b $-->/==> $a) (Truth_Abduction $T1 $T2)))
-(= (|- (list $A $T1) (list ($A ==> $B) $T2)) (list $B (Truth_Deduction $T1 $T2)))
-(= (|- (list $A $T1) (list (($A && $B) ==> $C) $T2)) (list (list $B ==> $C) (Truth_Deduction $T1 $T2)))
-(= (|- (list $B $T1) (list ($A ==> $B) $T2)) (list $A (Truth_Abduction $T1 $T2)))
+(= (|- ($T $T1) ($T $T2)) (list $T (Truth_Revision $T1 $T2)))
+(= (|- (($a '--> $b) $T1) (($b '--> $c) $T2)) (list (list $a '--> $c) (Truth_Deduction $T1 $T2)))
+(= (|- (($a '--> $b) $T1) (($a '--> $c) $T2)) (list (list $c '--> $b) (Truth_Induction $T1 $T2)))
+(= (|- (($a '--> $c) $T1) (($b '--> $c) $T2)) (list (list $b '--> $a) (Truth_Abduction $T1 $T2)))
+(= (|- (($a '==> $b) $T1) (($b '==> $c) $T2)) (list (list $a '==> $c) (Truth_Deduction $T1 $T2)))
+(= (|- (($a '==> $b) $T1) (($a '==> $c) $T2)) (list (list $c '==> $b) (Truth_Induction $T1 $T2)))
+(= (|- (($a '==> $c) $T1) (($b '==> $c) $T2)) (list (list $b '==> $a) (Truth_Abduction $T1 $T2)))
+(= (|- ($A $T1) (($A '==> $B) $T2)) (list $B (Truth_Deduction $T1 $T2)))
+(= (|- ($A $T1) ((($A '&& $B) '==> $C) $T2)) (list (list $B '==> $C) (Truth_Deduction $T1 $T2)))
+(= (|- ($B $T1) (($A '==> $B) $T2)) (list $A (Truth_Abduction $T1 $T2)))
 ; NAL-4 (selected subset)
-(= (|- (list (($A x $B) --> $R) $T1) (list (($C x $B) --> $R) $T2)) (list (list $C --> $A) (Truth_Abduction $T1 $T2)))
-(= (|- (list (($A x $B) --> $R) $T1) (list (($A x $C) --> $R) $T2)) (list (list $C --> $B) (Truth_Abduction $T1 $T2)))
-(= (|- (list ($R --> ($A x $B)) $T1) (list ($R --> ($C x $B)) $T2)) (list (list $C --> $A) (Truth_Induction $T1 $T2)))
-(= (|- (list ($R --> ($A x $B)) $T1) (list ($R --> ($A x $C)) $T2)) (list (list $C --> $B) (Truth_Induction $T1 $T2)))
-(= (|- (list (($A x $B) --> $R) $T1) (list ($C --> $A) $T2)) (list (list (list $C x $B) --> $R) (Truth_Deduction $T1 $T2)))
-(= (|- (list (($A x $B) --> $R) $T1) (list ($A --> $C) $T2)) (list (list (list $C x $B) --> $R) (Truth_Induction $T1 $T2)))
-(= (|- (list (($A x $B) --> $R) $T1) (list ($C --> $B) $T2)) (list (list (list $A x $C) --> $R) (Truth_Deduction $T1 $T2)))
-(= (|- (list (($A x $B) --> $R) $T1) (list ($B --> $C) $T2)) (list (list (list $A x $C) --> $R) (Truth_Induction $T1 $T2)))
-(= (|- (list ($R --> ($A x $B)) $T1) (list ($A --> $C) $T2)) (list (list $R --> (list $C x $B)) (Truth_Deduction $T1 $T2)))
-(= (|- (list ($R --> ($A x $B)) $T1) (list ($C --> $A) $T2)) (list (list $R --> (list $C x $B)) (Truth_Abduction $T1 $T2)))
-(= (|- (list ($R --> ($A x $B)) $T1) (list ($B --> $C) $T2)) (list (list $R --> (list $A x $C)) (Truth_Deduction $T1 $T2)))
-(= (|- (list ($R --> ($A x $B)) $T1) (list ($C --> $B) $T2)) (list (list $R --> (list $A x $C)) (Truth_Abduction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) ((($C 'x $B) '--> $R) $T2)) (list (list $C '--> $A) (Truth_Abduction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) ((($A 'x $C) '--> $R) $T2)) (list (list $C '--> $B) (Truth_Abduction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($R '--> ($C 'x $B)) $T2)) (list (list $C '--> $A) (Truth_Induction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($R '--> ($A 'x $C)) $T2)) (list (list $C '--> $B) (Truth_Induction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($C '--> $A) $T2)) (list (list (list $C 'x $B) '--> $R) (Truth_Deduction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($A '--> $C) $T2)) (list (list (list $C 'x $B) '--> $R) (Truth_Induction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($C '--> $B) $T2)) (list (list (list $A 'x $C) '--> $R) (Truth_Deduction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($B '--> $C) $T2)) (list (list (list $A 'x $C) '--> $R) (Truth_Induction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($A '--> $C) $T2)) (list (list $R '--> (list $C 'x $B)) (Truth_Deduction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($C '--> $A) $T2)) (list (list $R '--> (list $C 'x $B)) (Truth_Abduction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($B '--> $C) $T2)) (list (list $R '--> (list $A 'x $C)) (Truth_Deduction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($C '--> $B) $T2)) (list (list $R '--> (list $A 'x $C)) (Truth_Abduction $T1 $T2)))
 
 ;Whether evidence was just counted once
 (= (StampDisjoint $Ev1 $Ev2)
    (== () (collapse (let* (($x (superpose $Ev1))
                            ($y (superpose $Ev2)))
-                          (case (== $x $y) ((True 42)))))))
+                          (case (== $x $y) ((True 'overlap)))))))
 
 ;; Exhaustive-until-depth deriver
 (= (Derive $beliefs $depth $maxdepth)
    (if (> $depth $maxdepth)
        $beliefs
        (let $derivations 
-            (collapse (let* (((Sentence $x $Ev1) (superpose $beliefs))
-                             ((Sentence $y $Ev2) (superpose $beliefs))
+            (collapse (let* ((('Sentence $x $Ev1) (superpose $beliefs))
+                             (('Sentence $y $Ev2) (superpose $beliefs))
                              ($stamp (TupleConcat $Ev1 $Ev2)))
                             (If (StampDisjoint $Ev1 $Ev2) 
-                                (case (|- $x $y) ((($T $TV) (list Sentence (list $T $TV) $stamp)))))))
+                                (case (|- $x $y) ((($T $TV) (list 'Sentence (list $T $TV) $stamp)))))))
             (Derive (TupleConcat $beliefs $derivations) (+ $depth 1) $maxdepth))))
 
 ;retrieve the best candidate
@@ -65,7 +67,7 @@
                 (BestCandidate $evaluateCandidateFunction $bestCandidate $tail)))))
 
 ;candidate evaluation based on confidence
-(= (ConfidenceRank (list ($f $c) $Ev)) $c)
+(= (ConfidenceRank (($f $c) $Ev)) $c)
 (= (ConfidenceRank Nil) 0)
 ;(= (ConfidenceRank $List)
 ;   (if (== $List Nil)
@@ -76,19 +78,19 @@
 (= (Question $kb $term $steps)
    (BestCandidate ConfidenceRank () (collapse (let $x (Derive $kb 1 $steps) 
                                                    (case (superpose $x)
-                                                         (((Sentence ($T $TV) $Ev) (case (== $T $term) 
-                                                                                         ((True (list $TV $Ev)))))))))))
+                                                         (((Sentence ($T $TV) $Ev) (case (== $T $term) ;todo enforce 'Sentence atom
+                                                                                          ((True (list $TV $Ev)))))))))))
 
 
 ;<EVALUATIONS>
 
-;(Question (list (list Sentence (list (list a --> b) (list 1.0 0.9)) (list 1)) 
-;                (list Sentence (list (list b --> c) (list 1.0 0.9)) (list 2))
-;                (list Sentence (list (list c --> d) (list 1.0 0.9)) (list 3))
-;                (list Sentence (list (list d --> e) (list 1.0 0.9)) (list 4))
-;                (list Sentence (list (list e --> f) (list 1.0 0.9)) (list 5))
+;(Question (list (list 'Sentence (list (list 'a '--> 'b) (list 1.0 0.9)) (list 1))
+;                (list 'Sentence (list (list 'b '--> 'c) (list 1.0 0.9)) (list 2))
+;                (list 'Sentence (list (list 'c '--> 'd) (list 1.0 0.9)) (list 3))
+;                (list 'Sentence (list (list 'd '--> 'e) (list 1.0 0.9)) (list 4))
+;                (list 'Sentence (list (list 'e '--> 'f) (list 1.0 0.9)) (list 5))
 ;          )
-;          (list a --> f) 3)
+;          (list 'a '--> 'f) 3)
 
 ;(BestCandidate ConfidenceRank Nil (list (list (list 1.0 0.9) (list 0)) 
 ;                                        (list (list 1.0 0.9) (list 0))
@@ -122,13 +124,17 @@
 ;                                         (list Sentence (list $T $TV) $stamp)))) )
 ;                              )))
 
+
+;(|- (list (list 'a '==> 'b) (list 1.0 0.9)) (list (list 'b '==> 'c) (list 1.0 0.9)))
+
+
 ;(case (|- (list (list a ==> b) (list 1.0 0.9)) (list (list b ==> c) (list 1.0 0.9)))
 ;      (($else $else)))
 
 
-;(Question (list (list Sentence (list (list garfield --> cat) (list 1.0 0.9)) (list 1)) 
-;                (list Sentence (list (list cat --> blue) (list 1.0 0.9)) (list 2)))
-;          (list garfield --> blue) 1)
+;(Question (list (list 'Sentence (list (list 'garfield '--> 'cat) (list 1.0 0.9)) (list 1)) 
+;                (list 'Sentence (list (list 'cat '--> 'blue) (list 1.0 0.9)) (list 2)))
+;          (list 'garfield '--> 'blue) 1)
 
 ;(Question ((list Sentence (list (({ garfield }) --> cat) (list 1.0 0.9)) (list 1)) 
 ;            (list Sentence (list ((cat * sky) --> like) (list 1.0 0.9)) (list 2)) 
@@ -144,13 +150,13 @@
 ;           (list ({ garfield }) --> artist) 3)
 
 
-(Question (list (list Sentence (list (list (list ExtSet garfield) --> cat) (list 1.0 0.9)) (list 1)) 
-                (list Sentence (list (list (list cat x sky) --> like) (list 1.0 0.9)) (list 2))
-                (list Sentence (list (list sky --> (list IntSet blue)) (list 1.0 0.9)) (list 3))
-                (list Sentence (list (list (list (list (list ExtSet garfield) x (list IntSet blue)) --> like) ==> (list (list ExtSet garfield) --> artist)) (list 1.0 0.9)) (list 4))
+(Question (list (list 'Sentence (list (list (list 'ExtSet 'garfield) '--> 'cat) (list 1.0 0.9)) (list 1)) 
+                (list 'Sentence (list (list (list 'cat 'x 'sky) '--> 'like) (list 1.0 0.9)) (list 2))
+                (list 'Sentence (list (list 'sky '--> (list 'IntSet 'blue)) (list 1.0 0.9)) (list 3))
+                (list 'Sentence (list (list (list (list (list 'ExtSet 'garfield) 'x (list 'IntSet 'blue)) '--> 'like) '==> (list (list 'ExtSet 'garfield) '--> 'artist)) (list 1.0 0.9)) (list 4))
           )
           ;(list (list (list ExtSet garfield) x (list IntSet blue)) --> like)
-          (list (list ExtSet garfield) --> artist)
+          (list (list 'ExtSet 'garfield) '--> 'artist)
           3)
 
 
@@ -173,7 +179,5 @@
 ;                  (case (== $x 4) ((True 42)))))
 
 ;(= (|- ($T $T1) ($T $T2)) ($T (Truth_Revision $T1 $T2)))
-
-;(define a
 
 ;(|- (list (list a ==> b) (list 1.0 0.9)) (list (list b ==> c) (list 1.0 0.9)))
