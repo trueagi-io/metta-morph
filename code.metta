@@ -26,8 +26,8 @@
 ;          (($f2 $c2) $T2))
 ;         (list (* $f1 $f2) (* (* $f1 $f2) (* $c1 $c2)))))
 
-(= (Truth_Deduction (list $f1 $c1) (list $f2 $c2))
-                    (list (* $f1 $f2) (* (* $f1 $f2) (* $c1 $c2))))
+(= (Truth_Deduction ($f1 $c1) ($f2 $c2))
+   (list (* $f1 $f2) (* (* $f1 $f2) (* $c1 $c2))))
 
 ;(= (TemporalSequence $Ev1 (Event ($Term2 $Truth2) ($Time2 $Evidence2 $EPrio2)))
 ;   (let (Event ($Term1 $Truth1) ($Time1 $Evidence1 $EPrio1)) (Projection $Ev1 $Time2)

@@ -6,7 +6,6 @@
 (import amb)     ;amb to implement superpose nesting behavior
 (import amb-extras) ;amb1 to implement superpose
 (import matchable) ;let/case constructs with list deconstruction
-(import mini-kanren) ;match with true unification
 (import (chicken string)) ;->string function to convert scheme expressions to string
 (import bindings) ;bind-case with deconstruction
 (import match-generics) ;a proper define for scheme
@@ -110,61 +109,9 @@
 (define-syntax add-atom
   (syntax-rules ()
     ((_ space (atomi ...))
-     (begin
-           (set! space (cons (list 'atomi ...) space))
-           (define-atoms atomi ...)))))
+     (set! space (cons (list atomi ...) space)))))
 
-(define === ==) ;microkanren constructs use ===
-(define == equal?)   ;allow use == for MeTTa compatibility
-
-(define (conso x L Lx)
-        (=== Lx (cons x L)))
-
-(define (symbolo s)
-        (lambda (s/c)
-                (let ((s (walk s (car s/c))))
-                     (if (or (symbol? s) (list? s)) ;added: list
-                         (unit s/c)
-                         mzero))))
-
-(define (firstK number lst)
-        (if (equal? 0 number)
-            '()
-            (cons (car lst)
-                  (firstK (- number 1) (cdr lst)))))
-
-(define (var-to-number str)
-        (string->number (string-drop (symbol->string str) 1)))
-
-(define-syntax MatchMetta
-  (syntax-rules ()
-    ((_ space (pati ...) (reti ...))
-     (let* ((counter1 -1)
-            (counter2 -1)
-            (refcounter -1)
-            (varindices '())
-            (value (amb1 (run* (Q)
-                               (fresh ($0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $10)
-                                      (let ((vars (list $0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $10)))
-                                           (fresh (KB)
-                                                  (conso (list (if (string-prefix? "$" (symbol->string 'pati))
-                                                                   (begin (set! counter1 (+ counter1 1))
-                                                                          (set! varindices (cons (cons (symbol->string 'pati) counter1) varindices))
-                                                                          (list-ref vars counter1)) pati) ...) space KB)
-                                                  (membero (list (if (string-prefix? "$" (symbol->string 'pati))
-                                                                     (begin (set! counter2 (+ counter2 1))
-                                                                            (list-ref vars counter2)) pati) ...) KB)
-                                                  (=== Q (firstK (+ 1 counter2) vars))
-                                                  (symbolo (list-ref vars counter2)))))))))
-            (list (if (string-prefix? "$" (symbol->string 'reti))
-                      (list-ref value (cdr (assoc (symbol->string 'reti) varindices))) reti) ...)))
-    ((_ space (pati ...) ret)
-     (let ((value (amb1 (run* (Q)
-                      (fresh (KB)
-                             (conso (list (if (string-prefix? "$" (symbol->string 'pati)) Q pati) ...) space KB)
-                             (membero (list (if (string-prefix? "$" (symbol->string 'pati)) Q pati) ...) KB))
-                             (symbolo Q)))))
-                value))))
+(define == equal?) ;allow use == for MeTTa compatibility
 
 (define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
   (syntax-rules ()        ;as procedural sequential execution demands :begin"
@@ -178,3 +125,8 @@
         (if condition thenbody elsebody))
     ((_ condition thenbody)
         (if condition thenbody '()))))
+
+(define-syntax MatchMetta
+  (syntax-rules ()
+    ((_ space binds result)
+     (match-let* ((binds (amb1 space))) result))))
