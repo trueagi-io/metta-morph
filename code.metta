@@ -39,6 +39,11 @@
 
 ;(collapse (superpose ((add-atom &self (man mortal)) (match &self ($Q mortal) $Q))))
 
+(sequential (
+(add-atom &self ('man2 'mortal))
+(add-atom &self ('man 'mortal))
+(match &self ($a 'mortal) (list 'mortal $a))))
+
 ;(sequential (
 ;(add-atom &self (man mortal))
 ;(add-atom &self (man2 mortal))
@@ -58,10 +63,10 @@
 
 ;(range 1 50)
 
-(list ;(facF 100)
-      (wuza 5)
-      (superpose (list (list 1 2)
-      (collapse (superpose (list 3 4 (f 5)))))))
+;(list ;(facF 100)
+;      (wuza 5)
+;      (superpose (list (list 1 2)
+;      (collapse (superpose (list 3 4 (f 5)))))))
       
 ;(Truth_Deduction (list 1.0 0.9) (list 1.0 0.9))
 
