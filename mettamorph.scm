@@ -55,7 +55,7 @@
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
                 (hash-table-set! functions 'name (list name)))
-            (define (name xi ...) ((amb1 (hash-table-ref functions 'name)) xi ...))))))
+            (define-dx (name xi ...) ((amb1 (hash-table-ref functions 'name)) xi ...))))))
 
 (define-syntax =
   (syntax-rules () ;hard to generalize further but sufficiently powerful already
