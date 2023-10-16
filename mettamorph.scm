@@ -6,9 +6,7 @@
 (import amb)     ;amb to implement superpose nesting behavior
 (import amb-extras) ;amb1 to implement superpose
 (import matchable) ;let/case constructs with list deconstruction
-(import (chicken string)) ;->string function to convert scheme expressions to string
 (import bindings) ;bind-case with deconstruction
-(import match-generics) ;a proper define for scheme
 
 (define (print-all xs)
   (display "[")
@@ -49,54 +47,29 @@
 (define-syntax define-partial
   (syntax-rules ()
     ((_ (name xi ...) body)
-     (begin (define-dx (name xi ...) (if (and (or (not (equal? 'xi 'Nil)) (equal? xi '())) ...)
-                                      (handle-exceptions exn ((amb-failure-continuation)) body)
-                                      ((amb-failure-continuation))))
-            (if (hash-table-exists? functions 'name)
-                (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
-                (hash-table-set! functions 'name (list name)))
-            (define-dx (name xi ...) ((amb1 (hash-table-ref functions 'name)) xi ...))))))
+     (begin (let ((name (lambda (xi ...) (handle-exceptions exn ((amb-failure-continuation)) body))))
+                 (if (hash-table-exists? functions 'name)
+                     (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
+                     (hash-table-set! functions 'name (list name))))
+            (set! name (lambda (xi ...) ((amb1 (hash-table-ref functions 'name)) xi ...)))))))
 
 (define-syntax =
-  (syntax-rules () ;hard to generalize further but sufficiently powerful already
-    ((_ (name (args1 ...)) body) ;deconstruct 1 list argument
+  (syntax-rules () ;(extend if necessary!)
+    ((_ (name arg1) body) ;deconstruct 1 argument
      (begin (define-partial (name $T1)
-                            (match-let* (((args1 ...) $T1)) body))))
-    ((_ (name (args1 ...) (args2 ...)) body) ;deconstruct 2 list arguments
+                            (match-let* ((arg1 $T1)) body))))
+    ((_ (name arg1 arg2) body) ;deconstruct 2 arguments
      (begin (define-partial (name $T1 $T2)
-                            (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))))
-    ((_ (name (args1 ...) (args2 ...) (args3 ...)) body) ;deconstruct 3 list arguments
+                            (match-let* (((arg1 arg2) (list $T1 $T2))) body))))
+    ((_ (name arg1 arg2 arg3) body) ;deconstruct 3 arguments
      (begin (define-partial (name $T1 $T2 $T3)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))))
-    ((_ (name xi (args1 ...)) body) ;deconstruct 1 list argument with params
-     (begin (define-partial (name $T1 $Txi)
-                            (match-let* ((((args1 ...) xi) (list $T1 $Txi))) body))))
-    ((_ (name (args1 ...) xi) body) ;deconstruct 1 list argument with params
-     (begin (define-partial (name $T1 $Txi)
-                            (match-let* ((((args1 ...) xi) (list $T1 $Txi))) body))))
-    ((_ (name xi (args1 ...) (args2 ...)) body) ;deconstruct 2 list arguments with params
-     (begin (define-partial (name $T1 $T2 $Txi)
-                            (match-let* ((((args1 ...) (args2 ...) xi) (list $T1 $T2 $Txi))) body))))
-    ((_ (name (args1 ...) xi (args2 ...)) body) ;deconstruct 2 list arguments with params
-     (begin (define-partial (name $T1 $T2 $Txi)
-                            (match-let* ((((args1 ...) (args2 ...) xi) (list $T1 $T2 $Txi))) body))))
-    ((_ (name (args1 ...) (args2 ...) xi) body) ;deconstruct 2 list arguments with params
-     (begin (define-partial (name $T1 $T2 $Txi)
-                            (match-let* ((((args1 ...) (args2 ...) xi) (list $T1 $T2 $Txi))) body))))
-    ((_ (name xi (args1 ...) (args2 ...) (args3 ...)) body) ;deconstruct 3 list arguments with additional param
-     (begin (define-partial (name $T1 $T2 $T3 $Txi)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
-    ((_ (name (args1 ...) xi (args2 ...) (args3 ...)) body) ;deconstruct 3 list arguments with additional param
-     (begin (define-partial (name $T1 $T2 $T3 $Txi)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
-    ((_ (name (args1 ...) (args2 ...) xi (args3 ...)) body) ;deconstruct 3 list arguments with additional param
-     (begin (define-partial (name $T1 $T2 $T3 $Txi)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
-    ((_ (name (args1 ...) (args2 ...) (args3 ...) xi) body) ;deconstruct 3 list arguments with additional param
-     (begin (define-partial (name $T1 $T2 $T3 $Txi)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
-    ((_ (name xi ...) body) ;normal function definition with flattened params
-     (define-partial (name xi ...) body))))
+                            (match-let* (((arg1 arg2 arg3) (list $T1 $T2 $T3))) body))))
+    ((_ (name arg1 arg2 arg3 arg4) body) ;deconstruct 4 arguments
+     (begin (define-partial (name $T1 $T2 $T3 $T4)
+                            (match-let* (((arg1 arg2 arg3 arg4) (list $T1 $T2 $T3 $T4))) body))))
+    ((_ (name arg1 arg2 arg3 arg4 arg5) body) ;deconstruct 5 arguments
+     (begin (define-partial (name $T1 $T2 $T3 $T4 $T5)
+                            (match-let* (((arg1 arg2 arg3 arg4 arg5) (list $T1 $T2 $T3 $T4 $T5))) body))))))
 
 (define-syntax !
   (syntax-rules ()

@@ -68,7 +68,7 @@
 
 ;candidate evaluation based on confidence
 (= (ConfidenceRank (($f $c) $Ev)) $c)
-(= (ConfidenceRank Nil) 0)
+(= (ConfidenceRank ()) 0)
 ;(= (ConfidenceRank $List)
 ;   (if (== $List Nil)
 ;       0
