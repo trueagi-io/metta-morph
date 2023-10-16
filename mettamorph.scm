@@ -44,32 +44,16 @@
 
 (define functions (make-hash-table))
 
-(define-syntax define-partial
-  (syntax-rules ()
-    ((_ (name xi ...) body)
-     (begin (let ((name (lambda (xi ...) (handle-exceptions exn ((amb-failure-continuation)) body))))
-                 (if (hash-table-exists? functions 'name)
-                     (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
-                     (hash-table-set! functions 'name (list name))))
-            (set! name (lambda (xi ...) ((amb1 (hash-table-ref functions 'name)) xi ...)))))))
-
 (define-syntax =
-  (syntax-rules () ;(extend if necessary!)
-    ((_ (name arg1) body) ;deconstruct 1 argument
-     (begin (define-partial (name $T1)
-                            (match-let* ((arg1 $T1)) body))))
-    ((_ (name arg1 arg2) body) ;deconstruct 2 arguments
-     (begin (define-partial (name $T1 $T2)
-                            (match-let* (((arg1 arg2) (list $T1 $T2))) body))))
-    ((_ (name arg1 arg2 arg3) body) ;deconstruct 3 arguments
-     (begin (define-partial (name $T1 $T2 $T3)
-                            (match-let* (((arg1 arg2 arg3) (list $T1 $T2 $T3))) body))))
-    ((_ (name arg1 arg2 arg3 arg4) body) ;deconstruct 4 arguments
-     (begin (define-partial (name $T1 $T2 $T3 $T4)
-                            (match-let* (((arg1 arg2 arg3 arg4) (list $T1 $T2 $T3 $T4))) body))))
-    ((_ (name arg1 arg2 arg3 arg4 arg5) body) ;deconstruct 5 arguments
-     (begin (define-partial (name $T1 $T2 $T3 $T4 $T5)
-                            (match-let* (((arg1 arg2 arg3 arg4 arg5) (list $T1 $T2 $T3 $T4 $T5))) body))))))
+  (syntax-rules ()
+    ((_ (name patterns ...) body)
+     (begin
+       (let ((name (match-lambda* ((patterns ...) body))))
+         (if (hash-table-exists? functions 'name)
+             (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
+             (hash-table-set! functions 'name (list name))))
+       (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
+                          (apply (amb1 (hash-table-ref functions 'name)) args))))))))
 
 (define-syntax !
   (syntax-rules ()

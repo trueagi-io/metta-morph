@@ -50,9 +50,9 @@
 
 ;(test99 'test1 'test2 'test3)
 
-(test100 (list 'test1 'test2) 'test3)
+;(test100 (list 'test1 'test2) 'test1)
 
-;(test101 'test1 'test2 'test1)
+(test101 'test1 'test2 'test1)
 
 
 ;(wat (list 3 4))
