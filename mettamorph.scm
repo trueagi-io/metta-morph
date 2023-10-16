@@ -1,10 +1,7 @@
 ;run with CHICKEN Scheme!
-(import srfi-1)  ;filter
-(import srfi-69) ;hashtable support in Scheme
-(import amb)        ;amb to implement superpose nesting behavior
-(import amb-extras) ;amb1 to implement superpose
-(import matchable) ;let/case constructs with list deconstruction
-(import bindings) ;bind-case with deconstruction
+(import srfi-1 srfi-69)  ;filter and hashtable support in Scheme
+(import amb amb-extras)  ;amb to implement superpose nesting behavior, amb1 to implement superpose
+(import matchable) ;let/case constructs as well as match-lambda with list deconstruction
 
 (define (print-all xs)
   (display "[")
@@ -20,13 +17,11 @@
        (print-items (cdr xs)))))
   (print-items xs))
 
-(define (notUnspecified x)
-        (not (== x (if #f 42))))
-
 (define-syntax collapse
   (syntax-rules ()
     ((_ args)
-     (filter notUnspecified (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
+     (filter (lambda (x) (not (== x (if #f 42))))
+             (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
 
 (define-syntax superpose
   (syntax-rules ()
@@ -41,7 +36,6 @@
      arg)))
 
 (define functions (make-hash-table))
-
 (define-syntax =
   (syntax-rules ()
     ((_ (name patterns ...) body)
@@ -75,7 +69,7 @@
 (define-syntax CaseMetta
   (syntax-rules (else)
     ((_ var ((pat body) ...))
-     (handle-exceptions exn ((amb-failure-continuation)) (bind-case var (pat body) ...)))))
+     (handle-exceptions exn ((amb-failure-continuation)) (match var (pat body) ...)))))
 
 (define &self '())
 

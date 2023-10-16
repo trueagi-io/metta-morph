@@ -78,7 +78,7 @@
 (= (Question $kb $term $steps)
    (BestCandidate ConfidenceRank () (collapse (let $x (Derive $kb 1 $steps) 
                                                    (case (superpose $x)
-                                                         (((Sentence ($T $TV) $Ev) (case (== $T $term) ;todo enforce 'Sentence atom
+                                                         ((('Sentence ($T $TV) $Ev) (case (== $T $term)
                                                                                           ((True (list $TV $Ev)))))))))))
 
 
