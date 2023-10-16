@@ -1,9 +1,7 @@
 ;run with CHICKEN Scheme!
-(import (chicken condition)) ;exceptional chicken
-(import srfi-1) ;filter
-(import srfi-13) ;string support in Scheme
+(import srfi-1)  ;filter
 (import srfi-69) ;hashtable support in Scheme
-(import amb)     ;amb to implement superpose nesting behavior
+(import amb)        ;amb to implement superpose nesting behavior
 (import amb-extras) ;amb1 to implement superpose
 (import matchable) ;let/case constructs with list deconstruction
 (import bindings) ;bind-case with deconstruction
