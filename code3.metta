@@ -16,8 +16,8 @@
 (= (wat ($L $L2)) $L)
 
 
-(= (test99 'test1 'test2 $a) 42)
-(= (test99 'test1 'test2 $a) 43)
+(= (test99 $a 'test2 'test3) 42)
+(= (test99 $a 'test2 'test3) 43)
 ;(= (test99 'test1 'test2 'test4) 122)
 ;(= (test99 $x 'test2 'test3) $x)
 
@@ -37,9 +37,23 @@
 
 
 ;(define test "test")
+
+;TODO:
+(= (test100 ($a 'test2) $a) 42)
+(= (test100 ($a 'test2) 'test3) 43)
+
+
+;(= (test101 $a 'test2 $a) 42)
+(= (test101 $a 'test2 $a) 43)
+
 ;<EVALUATIONS>
 
-(test99 'test1 'test2 'test3)
+;(test99 'test1 'test2 'test3)
+
+(test100 (list 'test1 'test2) 'test3)
+
+;(test101 'test1 'test2 'test1)
+
 
 ;(wat (list 3 4))
 

@@ -68,15 +68,33 @@
     ((_ (name (args1 ...) (args2 ...) (args3 ...)) body) ;deconstruct 3 list arguments
      (begin (define-partial (name $T1 $T2 $T3)
                             (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))))
-    ((_ (name (args1 ...) xi ...) body) ;deconstruct 1 list argument with params
-     (begin (define-partial (name $T1 xi ...)
-                            (match-let* (((args1 ...) $T1)) body))))
-    ((_ (name (args1 ...) (args2 ...) xi ...) body) ;deconstruct 2 list arguments with params
-     (begin (define-partial (name $T1 $T2 xi ...)
-                            (match-let* ((((args1 ...) (args2 ...)) (list $T1 $T2))) body))))
-    ((_ (name (args1 ...) (args2 ...) (args3 ...) xi ...) body) ;deconstruct 3 list arguments with params
-     (begin (define-partial (name $T1 $T2 $T3 xi ...)
-                            (match-let* ((((args1 ...) (args2 ...) (args3 ...)) (list $T1 $T2 $T3))) body))))
+    ((_ (name xi (args1 ...)) body) ;deconstruct 1 list argument with params
+     (begin (define-partial (name $T1 $Txi)
+                            (match-let* ((((args1 ...) xi) (list $T1 $Txi))) body))))
+    ((_ (name (args1 ...) xi) body) ;deconstruct 1 list argument with params
+     (begin (define-partial (name $T1 $Txi)
+                            (match-let* ((((args1 ...) xi) (list $T1 $Txi))) body))))
+    ((_ (name xi (args1 ...) (args2 ...)) body) ;deconstruct 2 list arguments with params
+     (begin (define-partial (name $T1 $T2 $Txi)
+                            (match-let* ((((args1 ...) (args2 ...) xi) (list $T1 $T2 $Txi))) body))))
+    ((_ (name (args1 ...) xi (args2 ...)) body) ;deconstruct 2 list arguments with params
+     (begin (define-partial (name $T1 $T2 $Txi)
+                            (match-let* ((((args1 ...) (args2 ...) xi) (list $T1 $T2 $Txi))) body))))
+    ((_ (name (args1 ...) (args2 ...) xi) body) ;deconstruct 2 list arguments with params
+     (begin (define-partial (name $T1 $T2 $Txi)
+                            (match-let* ((((args1 ...) (args2 ...) xi) (list $T1 $T2 $Txi))) body))))
+    ((_ (name xi (args1 ...) (args2 ...) (args3 ...)) body) ;deconstruct 3 list arguments with additional param
+     (begin (define-partial (name $T1 $T2 $T3 $Txi)
+                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
+    ((_ (name (args1 ...) xi (args2 ...) (args3 ...)) body) ;deconstruct 3 list arguments with additional param
+     (begin (define-partial (name $T1 $T2 $T3 $Txi)
+                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
+    ((_ (name (args1 ...) (args2 ...) xi (args3 ...)) body) ;deconstruct 3 list arguments with additional param
+     (begin (define-partial (name $T1 $T2 $T3 $Txi)
+                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
+    ((_ (name (args1 ...) (args2 ...) (args3 ...) xi) body) ;deconstruct 3 list arguments with additional param
+     (begin (define-partial (name $T1 $T2 $T3 $Txi)
+                            (match-let* ((((args1 ...) (args2 ...) (args3 ...) xi) (list $T1 $T2 $T3 $Txi))) body))))
     ((_ (name xi ...) body) ;normal function definition with flattened params
      (define-partial (name xi ...) body))))
 
