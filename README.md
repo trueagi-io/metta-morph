@@ -21,7 +21,7 @@ chicken-install matchable
 ```sh run.sh filename.metta```
 
 which will produce RUN.scm and RUN.metta from filename.metta and run
-then with the MeTTa interpreter and Chicken Scheme interpreter.
+them with the MeTTa interpreter and Chicken Scheme interpreter.
 The output will be timed, and compared with each other, showing either ```==``` or ```!=```.
 If ```!=``` is shown then the recommended practice is to adjust the file by adding list annotations etc. until it will show with ```==```.
 This way
