@@ -30,7 +30,7 @@ Hence ```run.sh``` is a workable tool to make sure your code is independent from
 
 ```sh build.sh```
 
-which will build RUN.scm
+which will build ```RUN.scm``` into a binary ```RUN``` one can execute with ```./RUN``` or ```time ./RUN```.
 
 **Run tests**
 
