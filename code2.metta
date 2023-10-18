@@ -14,14 +14,14 @@
 ;; Inference rules
 ; NAL-1/5 (selected subset)
 (= (|- ($T $T1) ($T $T2)) (list $T (Truth_Revision $T1 $T2)))
-(= (|- (($a '--> $b) $T1) (($b '--> $c) $T2)) (list (list $a '--> $c) (Truth_Deduction $T1 $T2)))
-(= (|- (($a '--> $b) $T1) (($a '--> $c) $T2)) (list (list $c '--> $b) (Truth_Induction $T1 $T2)))
-(= (|- (($a '--> $c) $T1) (($b '--> $c) $T2)) (list (list $b '--> $a) (Truth_Abduction $T1 $T2)))
-(= (|- (($a '==> $b) $T1) (($b '==> $c) $T2)) (list (list $a '==> $c) (Truth_Deduction $T1 $T2)))
-(= (|- (($a '==> $b) $T1) (($a '==> $c) $T2)) (list (list $c '==> $b) (Truth_Induction $T1 $T2)))
-(= (|- (($a '==> $c) $T1) (($b '==> $c) $T2)) (list (list $b '==> $a) (Truth_Abduction $T1 $T2)))
+(= (|- (($a '--> $b) $T1) (($b '--> $c) $T2)) ((list $a '--> $c) (Truth_Deduction $T1 $T2)))
+(= (|- (($a '--> $b) $T1) (($a '--> $c) $T2)) ((list $c '--> $b) (Truth_Induction $T1 $T2)))
+(= (|- (($a '--> $c) $T1) (($b '--> $c) $T2)) ((list $b '--> $a) (Truth_Abduction $T1 $T2)))
+(= (|- (($a '==> $b) $T1) (($b '==> $c) $T2)) ((list $a '==> $c) (Truth_Deduction $T1 $T2)))
+(= (|- (($a '==> $b) $T1) (($a '==> $c) $T2)) ((list $c '==> $b) (Truth_Induction $T1 $T2)))
+(= (|- (($a '==> $c) $T1) (($b '==> $c) $T2)) ((list $b '==> $a) (Truth_Abduction $T1 $T2)))
 (= (|- ($A $T1) (($A '==> $B) $T2)) (list $B (Truth_Deduction $T1 $T2)))
-(= (|- ($A $T1) ((($A '&& $B) '==> $C) $T2)) (list (list $B '==> $C) (Truth_Deduction $T1 $T2)))
+(= (|- ($A $T1) ((($A '&& $B) '==> $C) $T2)) ((list $B '==> $C) (Truth_Deduction $T1 $T2)))
 (= (|- ($B $T1) (($A '==> $B) $T2)) (list $A (Truth_Abduction $T1 $T2)))
 ; NAL-4 (selected subset)
 (= (|- ((($A 'x $B) '--> $R) $T1) ((($C 'x $B) '--> $R) $T2)) (list (list $C '--> $A) (Truth_Abduction $T1 $T2)))
@@ -45,7 +45,7 @@
 
 ;; Exhaustive-until-depth deriver
 (= (Derive $beliefs $depth $maxdepth)
-   (if (> $depth $maxdepth)
+   (If (> $depth $maxdepth)
        $beliefs
        (let $derivations 
             (collapse (let* ((('Sentence $x $Ev1) (superpose $beliefs))

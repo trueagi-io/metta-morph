@@ -36,7 +36,7 @@
      arg)))
 
 (define functions (make-hash-table))
-(define-syntax =
+(define-syntax =helper
   (syntax-rules ()
     ((_ (name patterns ...) body)
      (begin
@@ -47,10 +47,17 @@
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
 
+(define-syntax =
+  (syntax-rules ()
+    ((_ (name patterns ...) (bodi ...))
+     (=helper (name patterns ...) (auto-list bodi ...)))
+    ((_ (name patterns ...) body)
+     (=helper (name patterns ...) body))))
+
 (define-syntax !
   (syntax-rules ()
-    ((_ args ...)
-     (print-all (amb-collect args ...)))))
+    ((_ (argi ...) ...)
+     (print-all (collapse (auto-list argi ...) ...)))))
 
 (define-syntax LetMetta
   (syntax-rules ()
@@ -86,12 +93,57 @@
      (begin
        expr ...))))
 
+;(define-syntax auto-list-helper
+;  (syntax-rules ()
+;    ((_ expr1 expr2 ...)
+;     (if (procedure? expr1)
+;         (apply expr1 (list expr2 ...))
+;         (list expr1 expr2 ...)))))
+
+(define (auto-list-helper expr1 . args)
+  (if (procedure? expr1)
+      (apply expr1 args)
+      (cons expr1 args)))
+
+(define-syntax is-metta-macro?
+  (syntax-rules ()
+    ((_ expr1)
+     (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose)
+         (eq? 'expr1 'LetMetta) (eq? 'expr1 'Let*Metta)
+         (eq? 'expr1 'Let*Metta) (eq? 'expr1 'CaseMetta)
+         (eq? 'expr1 'add-atom)))))
+
+(define-syntax auto-list
+  (syntax-rules ()
+    ((_ exi ...)
+     (exi ...))
+    ((_ expr1 expr2 expr3)
+     (if (or (is-metta-macro? expr1) (eq? 'expr1 '==))
+         (expr1 expr2 expr3)
+         (auto-list-helper expr1 expr2 expr3)))
+    ((_ expr1 expr2 expr3 expr4)
+     (if (or (is-metta-macro? expr1) (eq? 'expr1 'If))
+         (expr1 expr2 expr3 expr4)
+         (auto-list-helper expr1 expr2 expr3 expr4)))
+    ((_ expr1 expri ...)
+     (if (is-metta-macro? expr1)
+         (expr1 expri ...)
+         (auto-list-helper expr1 expri ...)))))
+
 (define-syntax If
   (syntax-rules ()
+    ((_ condition (theni ...) (elsi ...))
+        (if condition (auto-list theni ...) (auto-list elsi ...)))
+    ((_ condition (theni ...) else)
+        (if condition (auto-list theni ...) else))
+    ((_ condition then (elsi ...))
+        (if condition then (auto-list elsi ...)))
+    ((_ condition (theni ...))
+        (if condition (auto-list theni ...) '()))
     ((_ condition thenbody elsebody)
         (if condition thenbody elsebody))
     ((_ condition thenbody)
-        (if condition thenbody '()))))
+        (if condition thenbody))))
 
 (define-syntax MatchMetta
   (syntax-rules ()
