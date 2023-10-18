@@ -81,6 +81,7 @@
                                                          ((('Sentence ($T $TV) $Ev) (case (== $T $term)
                                                                                           ((True (list $TV $Ev)))))))))))
 
+(flonum-print-precision 17)
 
 ;<EVALUATIONS>
 
@@ -148,7 +149,6 @@
 ;            (list Sentence (list (sky --> blue) (list 1.0 0.9)) (list 3))
 ;            (list Sentence (list ((( garfield  * blue ) --> like) ==> ( garfield  --> artist)) (list 1.0 0.9)) (list 4)))
 ;           (list ({ garfield }) --> artist) 3)
-
 
 (Question (list (list 'Sentence (list (list (list 'ExtSet 'garfield) '--> 'cat) (list 1.0 0.9)) (list 1)) 
                 (list 'Sentence (list (list (list 'cat 'x 'sky) '--> 'like) (list 1.0 0.9)) (list 2))

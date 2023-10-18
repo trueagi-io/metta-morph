@@ -2,6 +2,7 @@
 (import srfi-1 srfi-69)  ;filter and hashtable support in Scheme
 (import amb amb-extras)  ;amb to implement superpose nesting behavior, amb1 to implement superpose
 (import matchable) ;let/case constructs as well as match-lambda with list deconstruction
+(import (chicken flonum))   ;floating point options
 
 (define (print-all xs)
   (display "[")
