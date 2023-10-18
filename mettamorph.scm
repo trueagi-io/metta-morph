@@ -139,7 +139,7 @@
     ((_ condition then (elsi ...))
         (if condition then (auto-list elsi ...)))
     ((_ condition (theni ...))
-        (if condition (auto-list theni ...) '()))
+        (if condition (auto-list theni ...) ((amb-failure-continuation))))
     ((_ condition thenbody elsebody)
         (if condition thenbody elsebody))
     ((_ condition thenbody)
