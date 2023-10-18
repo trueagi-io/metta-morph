@@ -1,4 +1,4 @@
-(= (TupleConcat $Ev1 $Ev2) (collapse (superpose (list (superpose $Ev1) (superpose $Ev2)))))
+(= (TupleConcat $Ev1 $Ev2) (collapse (superpose ((superpose $Ev1) (superpose $Ev2)))))
 
 ;; Truth functions
 (= (Truth_c2w $c) (/ $c (- 1 $c)))

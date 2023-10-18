@@ -26,6 +26,8 @@
 
 (define-syntax superpose
   (syntax-rules ()
+    ((_ (argi ...))
+     (amb1 (superpose-helper (auto-list-helper argi ...))))
     ((_ args)
      (amb1 (superpose-helper args)))))
 
@@ -142,6 +144,6 @@
 (define-syntax MatchMetta
   (syntax-rules ()
     ((_ space binds (resulti ...))
-     (match-let* ((binds (amb1 space))) (auto-list-helper resulti ...))) ;why helper required, only functions here?
+     (match-let* ((binds (amb1 space))) (auto-list-helper resulti ...)))
     ((_ space binds result)
      (match-let* ((binds (amb1 space))) result))))
