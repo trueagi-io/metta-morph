@@ -94,13 +94,6 @@
      (begin
        expr ...))))
 
-;(define-syntax auto-list-helper
-;  (syntax-rules ()
-;    ((_ expr1 expr2 ...)
-;     (if (procedure? expr1)
-;         (apply expr1 (list expr2 ...))
-;         (list expr1 expr2 ...)))))
-
 (define (auto-list-helper expr1 . args)
   (if (procedure? expr1)
       (apply expr1 args)
@@ -148,5 +141,7 @@
 
 (define-syntax MatchMetta
   (syntax-rules ()
+    ((_ space binds (resulti ...))
+     (match-let* ((binds (amb1 space))) (auto-list-helper resulti ...))) ;why helper required, only functions here?
     ((_ space binds result)
      (match-let* ((binds (amb1 space))) result))))
