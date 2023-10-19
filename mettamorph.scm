@@ -34,7 +34,7 @@
     ((_ ( (superpose x) ...))
      (amb x ...))
     ((_ arg)
-     (auto-list-helper1 arg))))
+     (auto-list1 arg))))
 
 (define functions (make-hash-table))
 (define-syntax =helper
@@ -63,21 +63,14 @@
     ((_ varval body)
      (match-let* varval body))
     ((_ var val body)
-     (match-let* ((var val)) body))))
+     (match-let* ((var (auto-list1 val))) body))))
 
 (define-syntax Let*Metta
   (syntax-rules ()
     ((_ ((vari vali) ...) body)
-     (match-let* ((vari vali) ...) body)) 
+     (match-let* ((vari (auto-list1 vali)) ...) body)) 
     ((_ (((vari1 vari2) vali) ...) body)
-     (match-let* (((vari1 vari2) vali) ...) body))))
-
-(define-syntax auto-list-helper1
-   (syntax-rules (else)
-    ((_ (vari ...))
-     (auto-list-helper vari ...))
-    ((_ var1)
-     var1)))
+     (match-let* (((vari1 vari2) (auto-list1 vali)) ...) body))))
 
 (define-syntax auto-list1
    (syntax-rules (else)
@@ -117,7 +110,7 @@
      (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose) (eq? 'expr1 'collapse)
          (eq? 'expr1 'LetMetta) (eq? 'expr1 'Let*Metta)
          (eq? 'expr1 'Let*Metta) (eq? 'expr1 'CaseMetta) (eq? 'expr1 'If) (eq? 'expr1 '==)
-         (eq? 'expr1 'add-atom)))))
+         (eq? 'expr1 'add-atom) )))) ;match-let* and the others, what about macro expansion?
 
 (define-syntax auto-list
   (syntax-rules ()
@@ -136,4 +129,4 @@
 (define-syntax MatchMetta
   (syntax-rules ()
     ((_ space binds result)
-     (match-let* ((binds (amb1 space))) (auto-list-helper1 result)))))
+     (match-let* ((binds (amb1 space))) (auto-list1 result)))))
