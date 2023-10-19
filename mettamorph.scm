@@ -58,19 +58,19 @@
     ((_ args ...)
      (print-all (amb-collect args ...)))))
 
-(define-syntax LetMetta
+(define-syntax Let
   (syntax-rules ()
     ((_ var val body)
      (match-let* ((var (auto-list1 val))) (auto-list1 body)))))
 
-(define-syntax Let*Metta
+(define-syntax Let*
   (syntax-rules ()
     ((_ ((vari vali) ...) body)
      (match-let* ((vari (auto-list1 vali)) ...) (auto-list1 body)))
     ((_ (((vari1 vari2) vali) ...) body)
      (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
 
-(define-syntax CaseMetta
+(define-syntax Case
   (syntax-rules (else)
     ((_ var ((pat body) ...))
      (handle-exceptions exn ((amb-failure-continuation)) (match var (pat body) ...)))))
@@ -103,9 +103,9 @@
   (syntax-rules ()
     ((_ expr1)
      (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose) (eq? 'expr1 'collapse)
-         (eq? 'expr1 'LetMetta) (eq? 'expr1 'Let*Metta)
-         (eq? 'expr1 'Let*Metta) (eq? 'expr1 'CaseMetta) (eq? 'expr1 'If) (eq? 'expr1 '==)
-         (eq? 'expr1 'add-atom) )))) ;match-let* and the others, what about macro expansion?
+         (eq? 'expr1 'Let) (eq? 'expr1 'Let*) (eq? 'expr1 'Match)
+         (eq? 'expr1 'Case) (eq? 'expr1 'If) (eq? 'expr1 '==)
+         (eq? 'expr1 'add-atom)))))
 
 (define-syntax auto-list
   (syntax-rules ()
@@ -128,7 +128,7 @@
     ((_ condition thenbody)
         (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
 
-(define-syntax MatchMetta
+(define-syntax Match
   (syntax-rules ()
     ((_ space binds result)
      (match-let* ((binds (amb1 space))) (auto-list1 result)))))
