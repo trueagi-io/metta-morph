@@ -70,13 +70,6 @@
     ((_ (((vari1 vari2) vali) ...) body)
      (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
 
-(define-syntax auto-list1
-   (syntax-rules (else)
-    ((_ (vari ...))
-     (auto-list vari ...))
-    ((_ var1)
-     var1)))
-
 (define-syntax CaseMetta
   (syntax-rules (else)
     ((_ var ((pat body) ...))
@@ -116,6 +109,13 @@
      (if (is-metta-macro? expr1)
          (expr1 expri ...)
          (auto-list-helper expr1 expri ...)))))
+
+(define-syntax auto-list1
+   (syntax-rules (else)
+    ((_ (vari ...))
+     (auto-list vari ...))
+    ((_ var1)
+     var1)))
 
 (define-syntax If
   (syntax-rules ()
