@@ -43,7 +43,7 @@
 
 ;<EVALUATIONS>
 
-(goodif 3)
+;(goodif 3)
 
 ;(goodfunc f)
 ;(1 2 3)
@@ -96,7 +96,7 @@
 ;(wuzaL 2 (list 3 4))
 
 ;(TupleConcat (list 1 2 3) (list 4 5 6))
-;(superpose (list (superpose (list 1 2 3)) (superpose (list 4 5 6))))
+;(superpose ( (superpose (list 1 2 3)) (superpose (list 4 5 6))))
 
 ;(superpose (list (superpose (list 1 2)) (superpose (list 3 4))))
 

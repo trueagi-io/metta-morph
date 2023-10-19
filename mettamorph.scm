@@ -20,6 +20,9 @@
 
 (define-syntax collapse
   (syntax-rules ()
+    ;((_ (argi ...))
+     ;(filter (lambda (x) (not (== x (if #f 42))))
+     ;        (amb-collect (handle-exceptions exn ((amb-failure-continuation)) (auto-list-helper argi ...)))))
     ((_ args)
      (filter (lambda (x) (not (== x (if #f 42))))
              (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
@@ -59,8 +62,8 @@
 
 (define-syntax !
   (syntax-rules ()
-    ((_ (argi ...) ...)
-     (print-all (collapse (auto-list argi ...) ...)))))
+    ((_ args ...)
+     (print-all (amb-collect args ...)))))
 
 (define-syntax LetMetta
   (syntax-rules ()
@@ -104,7 +107,7 @@
 (define-syntax is-metta-macro?
   (syntax-rules ()
     ((_ expr1)
-     (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose)
+     (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose) (eq? 'expr1 'collapse)
          (eq? 'expr1 'LetMetta) (eq? 'expr1 'Let*Metta)
          (eq? 'expr1 'Let*Metta) (eq? 'expr1 'CaseMetta)
          (eq? 'expr1 'add-atom)))))
