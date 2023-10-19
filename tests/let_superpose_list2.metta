@@ -1,7 +1,7 @@
 (= (wuzaL $x $L)
    (let* (($y (* 2 $x))
           ($z (superpose $L)))
-          (list $y $z)))
+          ($y $z)))
 
 ;<EVALUATIONS>
 

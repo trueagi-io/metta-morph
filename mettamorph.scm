@@ -60,17 +60,15 @@
 
 (define-syntax LetMetta
   (syntax-rules ()
-    ((_ varval body)
-     (match-let* varval body))
     ((_ var val body)
-     (match-let* ((var (auto-list1 val))) body))))
+     (match-let* ((var (auto-list1 val))) (auto-list1 body)))))
 
 (define-syntax Let*Metta
   (syntax-rules ()
     ((_ ((vari vali) ...) body)
-     (match-let* ((vari (auto-list1 vali)) ...) body)) 
+     (match-let* ((vari (auto-list1 vali)) ...) (auto-list1 body)))
     ((_ (((vari1 vari2) vali) ...) body)
-     (match-let* (((vari1 vari2) (auto-list1 vali)) ...) body))))
+     (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
 
 (define-syntax auto-list1
    (syntax-rules (else)
