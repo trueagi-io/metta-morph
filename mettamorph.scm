@@ -20,26 +20,21 @@
 
 (define-syntax collapse
   (syntax-rules ()
-    ;((_ (argi ...))
-     ;(filter (lambda (x) (not (== x (if #f 42))))
-     ;        (amb-collect (handle-exceptions exn ((amb-failure-continuation)) (auto-list-helper argi ...)))))
     ((_ args)
      (filter (lambda (x) (not (== x (if #f 42))))
              (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
 
 (define-syntax superpose
   (syntax-rules ()
-    ((_ (argi ...))
-     (amb1 (superpose-helper (auto-list-helper argi ...))))
     ((_ args)
      (amb1 (superpose-helper args)))))
 
 (define-syntax superpose-helper
   (syntax-rules ()
-    ((_ (list (superpose x) ...))
+    ((_ ( (superpose x) ...))
      (amb x ...))
     ((_ arg)
-     arg)))
+     (auto-list-helper1 arg))))
 
 (define functions (make-hash-table))
 (define-syntax =helper
@@ -55,10 +50,8 @@
 
 (define-syntax =
   (syntax-rules ()
-    ((_ (name patterns ...) (bodi ...))
-     (=helper (name patterns ...) (auto-list bodi ...)))
     ((_ (name patterns ...) body)
-     (=helper (name patterns ...) body))))
+     (=helper (name patterns ...) (auto-list1 body)))))
 
 (define-syntax !
   (syntax-rules ()
@@ -78,6 +71,20 @@
      (match-let* ((vari vali) ...) body)) 
     ((_ (((vari1 vari2) vali) ...) body)
      (match-let* (((vari1 vari2) vali) ...) body))))
+
+(define-syntax auto-list-helper1
+   (syntax-rules (else)
+    ((_ (vari ...))
+     (auto-list-helper vari ...))
+    ((_ var1)
+     var1)))
+
+(define-syntax auto-list1
+   (syntax-rules (else)
+    ((_ (vari ...))
+     (auto-list vari ...))
+    ((_ var1)
+     var1)))
 
 (define-syntax CaseMetta
   (syntax-rules (else)
@@ -109,21 +116,11 @@
     ((_ expr1)
      (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose) (eq? 'expr1 'collapse)
          (eq? 'expr1 'LetMetta) (eq? 'expr1 'Let*Metta)
-         (eq? 'expr1 'Let*Metta) (eq? 'expr1 'CaseMetta)
+         (eq? 'expr1 'Let*Metta) (eq? 'expr1 'CaseMetta) (eq? 'expr1 'If) (eq? 'expr1 '==)
          (eq? 'expr1 'add-atom)))))
 
 (define-syntax auto-list
   (syntax-rules ()
-    ((_ exi ...)
-     (exi ...))
-    ((_ expr1 expr2 expr3)
-     (if (or (is-metta-macro? expr1) (eq? 'expr1 '==))
-         (expr1 expr2 expr3)
-         (auto-list-helper expr1 expr2 expr3)))
-    ((_ expr1 expr2 expr3 expr4)
-     (if (or (is-metta-macro? expr1) (eq? 'expr1 'If))
-         (expr1 expr2 expr3 expr4)
-         (auto-list-helper expr1 expr2 expr3 expr4)))
     ((_ expr1 expri ...)
      (if (is-metta-macro? expr1)
          (expr1 expri ...)
@@ -131,22 +128,12 @@
 
 (define-syntax If
   (syntax-rules ()
-    ((_ condition (theni ...) (elsi ...))
-        (if condition (auto-list theni ...) (auto-list elsi ...)))
-    ((_ condition (theni ...) else)
-        (if condition (auto-list theni ...) else))
-    ((_ condition then (elsi ...))
-        (if condition then (auto-list elsi ...)))
-    ((_ condition (theni ...))
-        (if condition (auto-list theni ...) ((amb-failure-continuation))))
     ((_ condition thenbody elsebody)
         (if condition thenbody elsebody))
     ((_ condition thenbody)
-        (if condition thenbody))))
+        (if condition thenbody ((amb-failure-continuation))))))
 
 (define-syntax MatchMetta
   (syntax-rules ()
-    ((_ space binds (resulti ...))
-     (match-let* ((binds (amb1 space))) (auto-list-helper resulti ...)))
     ((_ space binds result)
-     (match-let* ((binds (amb1 space))) result))))
+     (match-let* ((binds (amb1 space))) (auto-list-helper1 result)))))
