@@ -42,9 +42,9 @@
     ((_ (name patterns ...) body)
      (begin
        (let ((name (match-lambda* ((patterns ...) body))))
-         (if (hash-table-exists? functions 'name)
-             (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
-             (hash-table-set! functions 'name (list name))))
+            (if (hash-table-exists? functions 'name)
+                (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
+                (hash-table-set! functions 'name (list name))))
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
 
@@ -90,10 +90,14 @@
      (begin
        expr ...))))
 
-(define (auto-list-helper expr1 . args)
-  (if (procedure? expr1)
-      (apply expr1 args)
-      (cons expr1 args)))
+(define-syntax auto-list-helper
+  (syntax-rules ()
+    ((_ expr1 ()) ;empty list
+     '())
+    ((_ expr1 argi ...)
+     (if (procedure? expr1)
+         (apply expr1 (list argi ...))
+         (cons expr1 (list argi ...))))))
 
 (define-syntax is-metta-macro?
   (syntax-rules ()
@@ -120,9 +124,9 @@
 (define-syntax If
   (syntax-rules ()
     ((_ condition thenbody elsebody)
-        (if condition thenbody elsebody))
+        (if condition (auto-list1 thenbody) (auto-list1 elsebody)))
     ((_ condition thenbody)
-        (if condition thenbody ((amb-failure-continuation))))))
+        (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
 
 (define-syntax MatchMetta
   (syntax-rules ()
