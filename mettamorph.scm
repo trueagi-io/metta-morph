@@ -39,9 +39,9 @@
 (define functions (make-hash-table))
 (define-syntax =helper
   (syntax-rules ()
-    ((_ (name patterns ...) body)
+    ((_ (name patterni ...) body)
      (begin
-       (let ((name (match-lambda* ((patterns ...) body))))
+       (let ((name (match-lambda* ((patterni ...) body))))
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
                 (hash-table-set! functions 'name (list name))))
@@ -50,8 +50,8 @@
 
 (define-syntax =
   (syntax-rules ()
-    ((_ (name patterns ...) body)
-     (=helper (name patterns ...) (auto-list1 body)))))
+    ((_ (name patterni ...) body)
+     (=helper (name patterni ...) (auto-list1 body)))))
 
 (define-syntax !
   (syntax-rules ()
@@ -72,8 +72,8 @@
 
 (define-syntax Case
   (syntax-rules (else)
-    ((_ var ((pat body) ...))
-     (handle-exceptions exn ((amb-failure-continuation)) (match var (pat body) ...)))))
+    ((_ var ((pati bodi) ...))
+     (handle-exceptions exn ((amb-failure-continuation)) (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
 
 (define &self '())
 
@@ -105,7 +105,7 @@
      (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose) (eq? 'expr1 'collapse)
          (eq? 'expr1 'Let) (eq? 'expr1 'Let*) (eq? 'expr1 'Match)
          (eq? 'expr1 'Case) (eq? 'expr1 'If) (eq? 'expr1 '==)
-         (eq? 'expr1 'add-atom)))))
+         (eq? 'expr1 'add-atom) (eq? 'expr1 'quote)))))
 
 (define-syntax auto-list
   (syntax-rules ()
@@ -115,7 +115,7 @@
          (auto-list-helper expr1 expri ...)))))
 
 (define-syntax auto-list1
-   (syntax-rules (else)
+   (syntax-rules ()
     ((_ (vari ...))
      (auto-list vari ...))
     ((_ var1)

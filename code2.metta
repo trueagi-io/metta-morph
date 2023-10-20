@@ -52,7 +52,7 @@
                              (('Sentence $y $Ev2) (superpose $beliefs))
                              ($stamp (TupleConcat $Ev1 $Ev2)))
                             (If (StampDisjoint $Ev1 $Ev2) 
-                                (case (|- $x $y) ((($T $TV) (list 'Sentence (list $T $TV) $stamp)))))))
+                                (case (|- $x $y) ((($T $TV) ('Sentence (list $T $TV) $stamp)))))))
             (Derive (TupleConcat $beliefs $derivations) (+ $depth 1) $maxdepth))))
 
 ;retrieve the best candidate
@@ -79,7 +79,7 @@
    (BestCandidate ConfidenceRank () (collapse (let $x (Derive $kb 1 $steps) 
                                                    (case (superpose $x)
                                                          ((('Sentence ($T $TV) $Ev) (case (== $T $term)
-                                                                                          ((True (list $TV $Ev)))))))))))
+                                                                                          ((True ($TV $Ev)))))))))))
 
 (flonum-print-precision 17)
 
