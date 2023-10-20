@@ -51,7 +51,7 @@
 (define-syntax !
   (syntax-rules ()
     ((_ args ...)
-     (print-all (amb-collect args ...)))))
+     (print-all (amb-collect (auto-list1 args) ...)))))
 
 (define-syntax Let
   (syntax-rules ()
