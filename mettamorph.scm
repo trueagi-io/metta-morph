@@ -37,21 +37,16 @@
      (auto-list1 arg))))
 
 (define functions (make-hash-table))
-(define-syntax =helper
+(define-syntax =
   (syntax-rules ()
     ((_ (name patterni ...) body)
      (begin
-       (let ((name (match-lambda* ((patterni ...) body))))
+       (let ((name (match-lambda* ((patterni ...) (auto-list1 body)))))
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
                 (hash-table-set! functions 'name (list name))))
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
-
-(define-syntax =
-  (syntax-rules ()
-    ((_ (name patterni ...) body)
-     (=helper (name patterni ...) (auto-list1 body)))))
 
 (define-syntax !
   (syntax-rules ()
