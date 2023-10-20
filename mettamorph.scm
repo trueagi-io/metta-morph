@@ -1,7 +1,8 @@
 ;run with CHICKEN Scheme!
-(import srfi-1 srfi-69)  ;filter and hashtable support in Scheme
-(import amb amb-extras)  ;amb to implement superpose nesting behavior, amb1 to implement superpose
-(import matchable) ;let/case constructs as well as match-lambda with list deconstruction
+(import srfi-1 srfi-69)   ;filter and hashtable support in Scheme
+(import amb amb-extras)   ;amb to implement superpose nesting behavior, amb1 to implement superpose
+(import matchable)        ;let/case constructs as well as match-lambda with list deconstruction
+(import (chicken flonum)) ;floating point options
 
 (define (print-all xs)
   (display "[")
@@ -52,21 +53,21 @@
     ((_ args ...)
      (print-all (amb-collect args ...)))))
 
-(define-syntax LetMetta
+(define-syntax Let
   (syntax-rules ()
     ((_ varval body)
      (match-let* varval body))
     ((_ var val body)
      (match-let* ((var val)) body))))
 
-(define-syntax Let*Metta
+(define-syntax Let*
   (syntax-rules ()
     ((_ ((vari vali) ...) body)
      (match-let* ((vari vali) ...) body)) 
     ((_ (((vari1 vari2) vali) ...) body)
      (match-let* (((vari1 vari2) vali) ...) body))))
 
-(define-syntax CaseMetta
+(define-syntax Case
   (syntax-rules (else)
     ((_ var ((pat body) ...))
      (handle-exceptions exn ((amb-failure-continuation)) (match var (pat body) ...)))))
@@ -93,7 +94,7 @@
     ((_ condition thenbody)
         (if condition thenbody '()))))
 
-(define-syntax MatchMetta
+(define-syntax Match
   (syntax-rules ()
     ((_ space binds result)
      (match-let* ((binds (amb1 space))) result))))
