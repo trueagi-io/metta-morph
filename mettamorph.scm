@@ -4,19 +4,7 @@
 (import matchable)        ;let/case constructs as well as match-lambda with list deconstruction
 (import (chicken flonum)) ;floating point options
 
-(define (print-all xs)
-  (display "[")
-  (define (print-items xs)
-    (cond
-      ((null? xs)
-       (display "]")
-       (newline))
-      (else
-       (display (car xs))
-       (if (not (null? (cdr xs)))
-           (display ", "))
-       (print-items (cdr xs)))))
-  (print-items xs))
+;; COLLAPSE AND SUPERPOSE
 
 (define-syntax collapse
   (syntax-rules ()
@@ -36,7 +24,10 @@
     ((_ arg)
      (auto-list1 arg))))
 
+;; FUNCTION DEFINITION IN METTA
+
 (define functions (make-hash-table))
+
 (define-syntax =
   (syntax-rules ()
     ((_ (name patterni ...) body)
@@ -48,10 +39,7 @@
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
 
-(define-syntax !
-  (syntax-rules ()
-    ((_ args ...)
-     (print-all (amb-collect (auto-list1 args) ...)))))
+;; SYNTACTIC CONSTRUCTS FOR DEFINING VARIABLES
 
 (define-syntax Let
   (syntax-rules ()
@@ -65,34 +53,54 @@
     ((_ (((vari1 vari2) vali) ...) body)
      (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
 
+;; SYNTACTIC CONSTRUCTS FOR CHECKING VARIABLES
+
 (define-syntax Case
   (syntax-rules (else)
     ((_ var ((pati bodi) ...))
-     (handle-exceptions exn ((amb-failure-continuation)) (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
+     (handle-exceptions exn ((amb-failure-continuation))
+                        (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
 
-(define &self '())
-
-(define-syntax add-atom
+(define-syntax If
   (syntax-rules ()
-    ((_ space (atomi ...))
-     (set! space (cons (list atomi ...) space)))))
+    ((_ condition thenbody elsebody)
+        (if condition (auto-list1 thenbody) (auto-list1 elsebody)))
+    ((_ condition thenbody)
+        (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
 
-(define == equal?) ;allow use == for MeTTa compatibility
+;; QUERY STATEMENT EXECUTION OPERATOR
 
-(define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
-  (syntax-rules ()        ;as procedural sequential execution demands :begin"
-    ((_ (expr ...))       ;that's why this construct is defined here instead
-     (begin
-       expr ...))))
+(define (print-all xs)
+  (display "[")
+  (define (print-items xs)
+    (cond
+      ((null? xs)
+       (display "]")
+       (newline))
+      (else
+       (display (car xs))
+       (if (not (null? (cdr xs)))
+           (display ", "))
+       (print-items (cdr xs)))))
+  (print-items xs))
+
+(define-syntax !
+  (syntax-rules ()
+    ((_ args ...)
+     (print-all (amb-collect (auto-list1 args) ...)))))
+
+; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
 
 (define-syntax auto-list-helper
   (syntax-rules ()
     ((_ expr1 ()) ;empty list
-     '())
+     (list expr1))
+    ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
+     (cons (auto-list1 (expr1i ...)) (list (auto-list1 argi) ...)))
     ((_ expr1 argi ...)
      (if (procedure? expr1)
-         (apply expr1 (list argi ...))
-         (cons expr1 (list argi ...))))))
+         (apply expr1 (list (auto-list1 argi) ...))
+         (cons (auto-list1 expr1) (list (auto-list1 argi) ...))))))
 
 (define-syntax is-metta-macro?
   (syntax-rules ()
@@ -104,6 +112,8 @@
 
 (define-syntax auto-list
   (syntax-rules ()
+    ((_ expr)
+     (list (auto-list1 expr)))
     ((_ expr1 expri ...)
      (if (is-metta-macro? expr1)
          (expr1 expri ...)
@@ -116,14 +126,28 @@
     ((_ var1)
      var1)))
 
-(define-syntax If
+;; EQUALITY
+
+(define == equal?)
+
+;; SPACES IMPLEMENTATION
+
+(define &self '())
+
+(define-syntax add-atom
   (syntax-rules ()
-    ((_ condition thenbody elsebody)
-        (if condition (auto-list1 thenbody) (auto-list1 elsebody)))
-    ((_ condition thenbody)
-        (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
+    ((_ space (atomi ...))
+     (set! space (cons (list atomi ...) space)))))
 
 (define-syntax Match
   (syntax-rules ()
     ((_ space binds result)
      (match-let* ((binds (amb1 space))) (auto-list1 result)))))
+
+;; PROCEDURAL CONSTRUCTS
+
+(define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
+  (syntax-rules ()        ;as procedural sequential execution demands :begin"
+    ((_ (expr ...))       ;that's why this construct is defined here instead
+     (begin
+       expr ...))))
