@@ -28,14 +28,14 @@
 (= (|- ((($A 'x $B) '--> $R) $T1) ((($A 'x $C) '--> $R) $T2)) (($C '--> $B) (Truth_Abduction $T1 $T2)))
 (= (|- (($R '--> ($A 'x $B)) $T1) (($R '--> ($C 'x $B)) $T2)) (($C '--> $A) (Truth_Induction $T1 $T2)))
 (= (|- (($R '--> ($A 'x $B)) $T1) (($R '--> ($A 'x $C)) $T2)) (($C '--> $B) (Truth_Induction $T1 $T2)))
-(= (|- ((($A 'x $B) '--> $R) $T1) (($C '--> $A) $T2)) ((list (list $C 'x $B) '--> $R) (Truth_Deduction $T1 $T2)))
-(= (|- ((($A 'x $B) '--> $R) $T1) (($A '--> $C) $T2)) ((list (list $C 'x $B) '--> $R) (Truth_Induction $T1 $T2)))
-(= (|- ((($A 'x $B) '--> $R) $T1) (($C '--> $B) $T2)) ((list (list $A 'x $C) '--> $R) (Truth_Deduction $T1 $T2)))
-(= (|- ((($A 'x $B) '--> $R) $T1) (($B '--> $C) $T2)) ((list (list $A 'x $C) '--> $R) (Truth_Induction $T1 $T2)))
-(= (|- (($R '--> ($A 'x $B)) $T1) (($A '--> $C) $T2)) ((list $R '--> (list $C 'x $B)) (Truth_Deduction $T1 $T2)))
-(= (|- (($R '--> ($A 'x $B)) $T1) (($C '--> $A) $T2)) ((list $R '--> (list $C 'x $B)) (Truth_Abduction $T1 $T2)))
-(= (|- (($R '--> ($A 'x $B)) $T1) (($B '--> $C) $T2)) ((list $R '--> (list $A 'x $C)) (Truth_Deduction $T1 $T2)))
-(= (|- (($R '--> ($A 'x $B)) $T1) (($C '--> $B) $T2)) ((list $R '--> (list $A 'x $C)) (Truth_Abduction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($C '--> $A) $T2)) ((($C 'x $B) '--> $R) (Truth_Deduction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($A '--> $C) $T2)) ((($C 'x $B) '--> $R) (Truth_Induction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($C '--> $B) $T2)) ((($A 'x $C) '--> $R) (Truth_Deduction $T1 $T2)))
+(= (|- ((($A 'x $B) '--> $R) $T1) (($B '--> $C) $T2)) ((($A 'x $C) '--> $R) (Truth_Induction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($A '--> $C) $T2)) (($R '--> ($C 'x $B)) (Truth_Deduction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($C '--> $A) $T2)) (($R '--> ($C 'x $B)) (Truth_Abduction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($B '--> $C) $T2)) (($R '--> ($A 'x $C)) (Truth_Deduction $T1 $T2)))
+(= (|- (($R '--> ($A 'x $B)) $T1) (($C '--> $B) $T2)) (($R '--> ($A 'x $C)) (Truth_Abduction $T1 $T2)))
 
 ;Whether evidence was just counted once
 (= (StampDisjoint $Ev1 $Ev2)
@@ -52,7 +52,7 @@
                              (('Sentence $y $Ev2) (superpose $beliefs))
                              ($stamp (TupleConcat $Ev1 $Ev2)))
                             (If (StampDisjoint $Ev1 $Ev2) 
-                                (case (|- $x $y) ((($T $TV) ('Sentence (list $T $TV) $stamp)))))))
+                                (case (|- $x $y) ((($T $TV) ('Sentence ($T $TV) $stamp)))))))
             (Derive (TupleConcat $beliefs $derivations) (+ $depth 1) $maxdepth))))
 
 ;retrieve the best candidate
@@ -150,13 +150,12 @@
 ;            (list Sentence (list ((( garfield  * blue ) --> like) ==> ( garfield  --> artist)) (list 1.0 0.9)) (list 4)))
 ;           (list ({ garfield }) --> artist) 3)
 
-(Question (list (list 'Sentence (list (list (list 'ExtSet 'garfield) '--> 'cat) (list 1.0 0.9)) (list 1)) 
-                (list 'Sentence (list (list (list 'cat 'x 'sky) '--> 'like) (list 1.0 0.9)) (list 2))
-                (list 'Sentence (list (list 'sky '--> (list 'IntSet 'blue)) (list 1.0 0.9)) (list 3))
-                (list 'Sentence (list (list (list (list (list 'ExtSet 'garfield) 'x (list 'IntSet 'blue)) '--> 'like) '==> (list (list 'ExtSet 'garfield) '--> 'artist)) (list 1.0 0.9)) (list 4))
+(Question (('Sentence ((('ExtSet 'garfield) '--> 'cat) (1.0 0.9)) (1))
+                ('Sentence ((('cat 'x 'sky) '--> 'like) (1.0 0.9)) (2))
+                ('Sentence (('sky '--> ('IntSet 'blue)) (1.0 0.9)) (3))
+                ('Sentence ((((('ExtSet 'garfield) 'x ('IntSet 'blue)) '--> 'like) '==> (('ExtSet 'garfield) '--> 'artist)) (1.0 0.9)) (4))
           )
-          ;(list (list (list ExtSet garfield) x (list IntSet blue)) --> like)
-          (list (list 'ExtSet 'garfield) '--> 'artist)
+          (('ExtSet 'garfield) '--> 'artist)
           3)
 
 

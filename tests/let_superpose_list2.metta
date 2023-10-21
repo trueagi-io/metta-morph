@@ -5,4 +5,4 @@
 
 ;<EVALUATIONS>
 
-(wuzaL 2 (list 3 4))
+(wuzaL 2 (3 4))

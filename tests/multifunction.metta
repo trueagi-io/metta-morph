@@ -8,4 +8,4 @@
 
 ;<EVALUATIONS>
 
-(g 42 (list 1 2))
+(g 42 (1 2))

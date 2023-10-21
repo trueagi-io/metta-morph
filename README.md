@@ -40,8 +40,6 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 **Current limitations**
 
-- In deeper-nested structures list is still sometimes required, even better macros could eliminate it further, or totally.
-
 - Atoms need to start with ```'```, e.g. ```'fish``` rather than ```fish```. Else Chicken Scheme would think it is a variable, and MeTTa is neutral to whether a ```'``` is in the beginning.
 
 - Variables need to start with ```$``` as MeTTa demands it, and for Chicken Scheme it does not matter.

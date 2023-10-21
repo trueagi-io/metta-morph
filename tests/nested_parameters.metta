@@ -3,4 +3,4 @@
 
 ;<EVALUATIONS>
 
-(Truth_Deduction (list 1.0 0.9) (list 1.0 0.9))
+(Truth_Deduction (1.0 0.9) (1.0 0.9))
