@@ -31,46 +31,44 @@
 
 (define-syntax superpose-helper
   (syntax-rules ()
-    ((_ (list (superpose x) ...))
+    ((_ ( (superpose x) ...))
      (amb x ...))
     ((_ arg)
-     arg)))
+     (auto-list1 arg))))
 
 (define functions (make-hash-table))
 (define-syntax =
   (syntax-rules ()
-    ((_ (name patterns ...) body)
+    ((_ (name patterni ...) body)
      (begin
-       (let ((name (match-lambda* ((patterns ...) body))))
-         (if (hash-table-exists? functions 'name)
-             (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
-             (hash-table-set! functions 'name (list name))))
+       (let ((name (match-lambda* ((patterni ...) (auto-list1 body)))))
+            (if (hash-table-exists? functions 'name)
+                (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
+                (hash-table-set! functions 'name (list name))))
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
 
 (define-syntax !
   (syntax-rules ()
     ((_ args ...)
-     (print-all (amb-collect args ...)))))
+     (print-all (amb-collect (auto-list1 args) ...)))))
 
 (define-syntax Let
   (syntax-rules ()
-    ((_ varval body)
-     (match-let* varval body))
     ((_ var val body)
-     (match-let* ((var val)) body))))
+     (match-let* ((var (auto-list1 val))) (auto-list1 body)))))
 
 (define-syntax Let*
   (syntax-rules ()
     ((_ ((vari vali) ...) body)
-     (match-let* ((vari vali) ...) body)) 
+     (match-let* ((vari (auto-list1 vali)) ...) (auto-list1 body)))
     ((_ (((vari1 vari2) vali) ...) body)
-     (match-let* (((vari1 vari2) vali) ...) body))))
+     (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
 
 (define-syntax Case
   (syntax-rules (else)
-    ((_ var ((pat body) ...))
-     (handle-exceptions exn ((amb-failure-continuation)) (match var (pat body) ...)))))
+    ((_ var ((pati bodi) ...))
+     (handle-exceptions exn ((amb-failure-continuation)) (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
 
 (define &self '())
 
@@ -87,14 +85,45 @@
      (begin
        expr ...))))
 
+(define-syntax auto-list-helper
+  (syntax-rules ()
+    ((_ expr1 ()) ;empty list
+     '())
+    ((_ expr1 argi ...)
+     (if (procedure? expr1)
+         (apply expr1 (list argi ...))
+         (cons expr1 (list argi ...))))))
+
+(define-syntax is-metta-macro?
+  (syntax-rules ()
+    ((_ expr1)
+     (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose) (eq? 'expr1 'collapse)
+         (eq? 'expr1 'Let) (eq? 'expr1 'Let*) (eq? 'expr1 'Match)
+         (eq? 'expr1 'Case) (eq? 'expr1 'If) (eq? 'expr1 '==)
+         (eq? 'expr1 'add-atom) (eq? 'expr1 'quote)))))
+
+(define-syntax auto-list
+  (syntax-rules ()
+    ((_ expr1 expri ...)
+     (if (is-metta-macro? expr1)
+         (expr1 expri ...)
+         (auto-list-helper expr1 expri ...)))))
+
+(define-syntax auto-list1
+   (syntax-rules ()
+    ((_ (vari ...))
+     (auto-list vari ...))
+    ((_ var1)
+     var1)))
+
 (define-syntax If
   (syntax-rules ()
     ((_ condition thenbody elsebody)
-        (if condition thenbody elsebody))
+        (if condition (auto-list1 thenbody) (auto-list1 elsebody)))
     ((_ condition thenbody)
-        (if condition thenbody '()))))
+        (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
 
 (define-syntax Match
   (syntax-rules ()
     ((_ space binds result)
-     (match-let* ((binds (amb1 space))) result))))
+     (match-let* ((binds (amb1 space))) (auto-list1 result)))))

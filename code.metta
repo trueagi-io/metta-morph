@@ -33,7 +33,25 @@
 ;   (let (Event ($Term1 $Truth1) ($Time1 $Evidence1 $EPrio1)) (Projection $Ev1 $Time2)
 ;        (Event (($Term1 &/ $Term2) (Truth_Intersection $Truth1 $Truth2)) ($Time2 (TupleConcat $Evidence1 $Evidence2) (0 0.0)))))
 
+(= (goodif $x)
+   (If (> 4 3) ($x 2) (4 5)))
+
+(= (g $x $y) ($y $x))
+
+(= (goodfunc $w) ($w 2 3))
+
+
 ;<EVALUATIONS>
+
+;(goodif 3)
+
+;(goodfunc f)
+;(1 2 3)
+;(goodfunc 42)
+;(list (goodfunc 1) (goodfunc g))
+
+
+;
 
 ;(superpose ((add-atom &self (man mortal)) (match &self ($Q mortal) $Q)))
 
@@ -63,11 +81,12 @@
 
 ;(range 1 50)
 
-(list ;(facF 100)
-      (wuza 5)
-      (superpose (list (list 1 2)
-      (collapse (superpose (list 3 4 (f 5)))))))
-      
+;(list ;(facF 100)
+;      (wuza 5)
+;      (superpose (list (list 1 2)
+;      (collapse (superpose (list 3 4 (f 5)))))))
+
+
 ;(Truth_Deduction (list 1.0 0.9) (list 1.0 0.9))
 
 ;(list 1 2)
@@ -77,7 +96,7 @@
 ;(wuzaL 2 (list 3 4))
 
 ;(TupleConcat (list 1 2 3) (list 4 5 6))
-;(superpose (list (superpose (list 1 2 3)) (superpose (list 4 5 6))))
+;(superpose ( (superpose (list 1 2 3)) (superpose (list 4 5 6))))
 
 ;(superpose (list (superpose (list 1 2)) (superpose (list 3 4))))
 

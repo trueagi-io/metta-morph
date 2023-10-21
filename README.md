@@ -40,8 +40,6 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 **Current limitations**
 
-- Function calls need to be distinguished from data, e.g. sometimes instead of (1 2 3) one needs to write (list 1 2 3). While the list token will be omitted in the translation to MeTTa, it is crucial to be present for Chicken Scheme in many cases in order to give the same output.
-
 - Atoms need to start with ```'```, e.g. ```'fish``` rather than ```fish```. Else Chicken Scheme would think it is a variable, and MeTTa is neutral to whether a ```'``` is in the beginning.
 
 - Variables need to start with ```$``` as MeTTa demands it, and for Chicken Scheme it does not matter.
