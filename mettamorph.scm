@@ -91,7 +91,7 @@
     ((_ args ...)
      (print-all (amb-collect (auto-list1 args) ...)))))
 
-; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
+;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
 
 (define-syntax auto-list-helper
   (syntax-rules ()
@@ -133,9 +133,9 @@
 (define-syntax Typedef
   (syntax-rules ()
     ((_ arg (-> A B))
-     (: f (A -> B)))
-    ((_ arg (-> A1 Ai ...))
-     'TODO)))
+     (: arg (A -> B)))
+    ((_ arg (-> Ai ... B))
+     (: arg (Ai ... -> B)))))
 
 ;; SPACES IMPLEMENTATION
 
