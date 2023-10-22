@@ -97,11 +97,11 @@
     ((_ expr1 ()) ;empty list
      (list expr1))
     ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
-     (cons (auto-list1 (expr1i ...)) (list (auto-list1 argi) ...)))
+     (list (auto-list1 (expr1i ...)) (auto-list1 argi) ...))
     ((_ expr1 argi ...)
      (if (procedure? expr1)
          (apply expr1 (list (auto-list1 argi) ...))
-         (cons (auto-list1 expr1) (list (auto-list1 argi) ...))))))
+         (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
 (define metta-macros (list->set (make-eq-comparator)
                                 (list 'sequential 'superpose 'collapse 'Let 'Let*
