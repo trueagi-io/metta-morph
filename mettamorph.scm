@@ -20,7 +20,7 @@
 
 (define-syntax superpose-helper
   (syntax-rules ()
-    ((_ ( (superpose x) ...))
+    ((_ ((superpose x) ...))
      (amb x ...))
     ((_ arg)
      (auto-list1 arg))))
@@ -103,7 +103,7 @@
          (apply expr1 (list (auto-list1 argi) ...))
          (cons (auto-list1 expr1) (list (auto-list1 argi) ...))))))
 
-(define metta-macros (list->set (make-default-comparator)
+(define metta-macros (list->set (make-eq-comparator)
                                 (list 'sequential 'superpose 'collapse 'Let 'Let*
                                       'Match 'Case 'If '== 'add-atom 'quote)))
 
