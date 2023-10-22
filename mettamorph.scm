@@ -133,7 +133,9 @@
 (define-syntax Typedef
   (syntax-rules ()
     ((_ arg (-> A B))
-     (: f (A -> B)))))
+     (: f (A -> B)))
+    ((_ arg (-> A1 Ai ...))
+     'TODO)))
 
 ;; SPACES IMPLEMENTATION
 
