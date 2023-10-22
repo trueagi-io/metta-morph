@@ -132,8 +132,6 @@
 
 (define-syntax Typedef
   (syntax-rules ()
-    ((_ arg (-> A B))
-     (: arg (A -> B)))
     ((_ arg (-> Ai ... B))
      (: arg (Ai ... -> B)))))
 
