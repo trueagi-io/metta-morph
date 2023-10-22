@@ -97,7 +97,7 @@
     ((_ expr1 ()) ;empty list
      (list expr1))
     ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
-     (list (auto-list1 (expr1i ...)) (auto-list1 argi) ...))
+     (list (auto-list expr1i ...) (auto-list1 argi) ...))
     ((_ expr1 argi ...)
      (if (procedure? expr1)
          (apply expr1 (list (auto-list1 argi) ...))
