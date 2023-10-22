@@ -4,6 +4,7 @@
 (import amb amb-extras)    ;amb to implement superpose and amb1 to implements its nesting behavior
 (import matchable)         ;let/case constructs as match-lambda with deconstruction
 (import (chicken flonum))  ;floating point options
+(import (chicken type))    ;type system
 
 ;; COLLAPSE AND SUPERPOSE
 
@@ -126,6 +127,13 @@
 ;; EQUALITY
 
 (define == equal?)
+
+;; TYPE SYSTEM
+
+(define-syntax Typedef
+  (syntax-rules ()
+    ((_ arg (-> A B))
+     (: f (A -> B)))))
 
 ;; SPACES IMPLEMENTATION
 
