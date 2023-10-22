@@ -105,10 +105,8 @@
 (define-syntax is-metta-macro?
   (syntax-rules ()
     ((_ expr1)
-     (or (eq? 'expr1 'sequential) (eq? 'expr1 'superpose) (eq? 'expr1 'collapse)
-         (eq? 'expr1 'Let) (eq? 'expr1 'Let*) (eq? 'expr1 'Match)
-         (eq? 'expr1 'Case) (eq? 'expr1 'If) (eq? 'expr1 '==)
-         (eq? 'expr1 'add-atom) (eq? 'expr1 'quote)))))
+     (memq 'expr1 (list 'sequential 'superpose 'collapse 'Let
+                        'Let* 'Match 'Case 'If '== 'add-atom 'quote)))))
 
 (define-syntax auto-list
   (syntax-rules ()
