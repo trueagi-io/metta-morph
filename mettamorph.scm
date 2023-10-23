@@ -142,7 +142,7 @@
 (define-syntax add-atom
   (syntax-rules ()
     ((_ space (atomi ...))
-     (set! space (cons (list atomi ...) space)))))
+     (begin (set! space (cons (list atomi ...) space)) '()))))
 
 (define-syntax Match
   (syntax-rules ()
@@ -151,8 +151,17 @@
 
 ;; PROCEDURAL CONSTRUCTS
 
+(define-syntax sequential-helper
+  (syntax-rules (do)
+    ((_ (do expr))
+     expr)
+    ((_ expr)
+     (set! ret (append ret (list expr))))))
+
 (define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
   (syntax-rules ()        ;as procedural sequential execution demands :begin"
-    ((_ (expr ...))       ;that's why this construct is defined here instead
+    ((_ (expri ...))       ;that's why this construct is defined here instead
      (begin
-       expr ...))))
+       (set! ret '())
+       (sequential-helper expri) ...
+       ret))))
