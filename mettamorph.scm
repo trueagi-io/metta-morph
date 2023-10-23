@@ -164,4 +164,4 @@
      (begin
        (set! ret '())
        (sequential-helper expri) ...
-       ret))))
+       (amb1 ret)))))
