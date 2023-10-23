@@ -103,19 +103,26 @@
          (apply expr1 (list (auto-list1 argi) ...))
          (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
-(define-syntax is-metta-macro?
+(define-syntax metta-macro-if
   (syntax-rules (collapse superpose Let Let* Match Case If == add-atom quote)
-    ((_ collapse) #t) ((_ superpose) #t) ((_ Let)#t)
-    ((_ Let*) #t) ((_ Match) #t) ((_ Case) #t) ((_ If) #t)
-    ((_ ==) #t) ((_ add-atom) #t) ((_ quote) #t)
-    ((_ arg) #f)))
+    ((_ collapse then else) then)
+    ((_ superpose then else) then)
+    ((_ Let then else) then)
+    ((_ Let* then else) then)
+    ((_ Match then else) then)
+    ((_ Case then else) then)
+    ((_ If then else) then)
+    ((_ == then else) then)
+    ((_ add-atom then else) then)
+    ((_ quote then else) then)
+    ((_ arg then else) else)))
 
 (define-syntax auto-list
   (syntax-rules ()
     ((_ expr)
      (list (auto-list1 expr)))
     ((_ expr1 expri ...)
-     (if (is-metta-macro? expr1)
+     (metta-macro-if expr1
          (expr1 expri ...)
          (auto-list-helper expr1 expri ...)))))
 
