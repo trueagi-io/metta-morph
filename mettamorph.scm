@@ -1,6 +1,5 @@
 ;; Run with CHICKEN Scheme!
 (import srfi-1 srfi-69)    ;filter, hashtable
-(import srfi-128 srfi-113) ;and set support
 (import amb amb-extras)    ;amb to implement superpose and amb1 to implements its nesting behavior
 (import matchable)         ;let/case constructs as match-lambda with deconstruction
 (import (chicken flonum))  ;floating point options
@@ -104,16 +103,19 @@
          (apply expr1 (list (auto-list1 argi) ...))
          (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
-(define metta-macros (list->set (make-eq-comparator)
-                                (list 'sequential 'superpose 'collapse 'Let 'Let*
-                                      'Match 'Case 'If '== 'add-atom 'quote)))
+(define-syntax is-metta-macro?
+  (syntax-rules (collapse superpose Let Let* Match Case If == add-atom quote)
+    ((_ collapse) #t) ((_ superpose) #t) ((_ Let)#t)
+    ((_ Let*) #t) ((_ Match) #t) ((_ Case) #t) ((_ If) #t)
+    ((_ ==) #t) ((_ add-atom) #t) ((_ quote) #t)
+    ((_ arg) #f)))
 
 (define-syntax auto-list
   (syntax-rules ()
     ((_ expr)
      (list (auto-list1 expr)))
     ((_ expr1 expri ...)
-     (if (set-contains? metta-macros 'expr1)
+     (if (is-metta-macro? expr1)
          (expr1 expri ...)
          (auto-list-helper expr1 expri ...)))))
 
