@@ -156,7 +156,9 @@
      (begin (set! space (cons (auto-list1 atom) space)) '()))))
 
 (define-syntax Match
-  (syntax-rules ()
+  (syntax-rules (MatchChain)
+    ((_ space (MatchChain bind1 bind2) result)
+     (Match space bind1 (Match space bind2 result)))
     ((_ space binds result)
      (match-let* ((binds (amb1 space))) (auto-list1 result)))))
 
