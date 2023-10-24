@@ -5,6 +5,7 @@
 (import (chicken flonum))  ;floating point options
 (import (chicken type))    ;type system
 
+
 ;; 1. Query statement, execution operator, prining the elements
 (define (print-all xs)
   (display "[")
@@ -49,7 +50,7 @@
      (auto-list1 arg))))
 
 
-;; 4. MeTTa function definitions: Creates a hash map where the functions with all possible 
+;; 4. MeTTa function definition: Creates a hash map where the functions with all possible 
 ;;    combinations of arguments are registered as keys. The values are the lists containing 
 ;;    function's bodies to allow functions with the same definition to appear more than once
 (define functions (make-hash-table)) ;Global function variable
@@ -64,11 +65,6 @@
                 (hash-table-set! functions 'name (list name))))
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
-
-
-;; SYNTACTIC CONSTRUCTS FOR DEFINING VARIABLES
-
-; Auto list if list just list if functio executes a fnction
 
 
 ;; 5. MeTTa's Let and Let*: Using Scheme's match-let*
@@ -93,7 +89,7 @@
                         (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
 
 
-;; 7. Defined in NARS Utils if statement
+;; 7. Defined in NARS Utils as alternative 'if' statement
 (define-syntax If
   (syntax-rules ()
     ((_ condition thenbody elsebody)
@@ -147,20 +143,10 @@
        (amb1 ret)))))
 
 
-;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
+;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTION CALL DISTINCTION
+;; Returns a list if arg is a list or executes a function if it is a function
 ;; Autolist expands a full tree of possibilities making much time to compile
-;; Remedy: define MeTTa macros to expand only defined MeTTa expressions
-(define-syntax auto-list-helper
-  (syntax-rules ()
-    ((_ expr1 ()) ;empty list
-     (list expr1))
-    ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
-     (list (auto-list expr1i ...) (auto-list1 argi) ...))
-    ((_ expr1 argi ...)
-     (if (procedure? expr1)
-         (apply expr1 (list (auto-list1 argi) ...))
-         (list (auto-list1 expr1) (auto-list1 argi) ...)))))
-
+;; To speedup, MeTTa macros definition to expand only defined MeTTa expressions
 (define-syntax metta-macro-if
   (syntax-rules (collapse superpose Let Let* Match Case If == add-atom quote)
     ((_ collapse then else) then)
@@ -174,6 +160,17 @@
     ((_ add-atom then else) then)
     ((_ quote then else) then)
     ((_ arg then else) else)))
+
+(define-syntax auto-list-helper
+  (syntax-rules ()
+    ((_ expr1 ()) ;empty list
+     (list expr1))
+    ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
+     (list (auto-list expr1i ...) (auto-list1 argi) ...))
+    ((_ expr1 argi ...)
+     (if (procedure? expr1)
+         (apply expr1 (list (auto-list1 argi) ...))
+         (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
 (define-syntax auto-list
   (syntax-rules ()
