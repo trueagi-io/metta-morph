@@ -9,7 +9,7 @@ Please note: the goal is to have a sufficient and fast (hundred of times faster)
 
 2. Install chicken Scheme: https://www.call-cc.org/
 
-3. Install chicken dependencies:
+3. Install the following chicken dependencies:
 ```
 chicken-install amb
 chicken-install srfi-69
