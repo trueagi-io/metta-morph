@@ -29,17 +29,15 @@
 ;but it depends on more advanced pattern matching features which are not yet in metta-morph
 ;(= (query $Term)
 ;   (let ($A $B $f) (match &self (= (|- ($A $T1) ($B $T2)) ($Term ($f $T1 $T2))) ($A $B $f))
-;        (case (match &self (, (($A $T1) $Ev1) (($B $T2) $Ev2))
-;                     (If (StampDisjoint $Ev1 $Ev2)
-;                         (($Term ($f $T1 $T2)) (TupleConcat $Ev1 $Ev2))))
-;              (((($Term $T) $Ev) (($Term $T) $Ev))))))
+;        (match &self (, (($A $T1) $Ev1) (($B $T2) $Ev2))
+;               (If (StampDisjoint $Ev1 $Ev2)
+;                   (($Term ($f $T1 $T2)) (TupleConcat $Ev1 $Ev2))))))
 
 (= (query $Term)
    (match &self (, (($A $T1) $Ev1) (($B $T2) $Ev2))
-                (If (StampDisjoint $Ev1 $Ev2)
-                    (let ($TermNew $T) (|- ($A $T1) ($B $T2))
-                         (If (== $TermNew $Term)
-                             (($Term $T) (TupleConcat $Ev1 $Ev2)))))))
+                (let ($TermNew $T) (|- ($A $T1) ($B $T2))
+                     (If (and (== $TermNew $Term) (StampDisjoint $Ev1 $Ev2))
+                         (($Term $T) (TupleConcat $Ev1 $Ev2))))))
 
 ;choice between two options of different term
 (= (Choice (($Term1 $T1) $ev1) (($Term2 $T2) $ev2))
