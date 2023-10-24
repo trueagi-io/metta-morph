@@ -33,6 +33,7 @@
   (syntax-rules ()
     ((_ (name patterni ...) body)
      (begin
+       (set! &self (cons '(=def (name patterni ...) body) &self)) ;for = in match
        (let ((name (match-lambda* ((patterni ...) (auto-list1 body)))))
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
