@@ -151,15 +151,13 @@
 
 (define-syntax add-atom
   (syntax-rules ()
-    ((_ space (atomi ...))
-     (begin (set! space (cons (list atomi ...) space)) '()))))
+    ((_ space atom)
+     (begin (set! space (cons (auto-list1 atom) space)) '()))))
 
 (define-syntax Match
   (syntax-rules ()
-    ((_ space binds (resulti ...))
-     (match-let* ((binds (amb1 space))) (list resulti ...)))
     ((_ space binds result)
-     (match-let* ((binds (amb1 space))) result))))
+     (match-let* ((binds (amb1 space))) (auto-list1 result)))))
 
 ;; PROCEDURAL CONSTRUCTS
 
