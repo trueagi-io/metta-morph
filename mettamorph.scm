@@ -159,6 +159,8 @@
   (syntax-rules (MatchChain)
     ((_ space (MatchChain bind1 bind2) result)
      (Match space bind1 (Match space bind2 result)))
+    ((_ space (MatchChain bind1 bindi ...) result)
+     (Match space bind1 (Match space (MatchChain bindi ...) result)))
     ((_ space binds result)
      (handle-exceptions exn ((amb-failure-continuation))
                         (match-let* ((binds (amb1 space))) (auto-list1 result))))))
