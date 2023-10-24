@@ -104,7 +104,7 @@
          (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
 (define-syntax metta-macro-if
-  (syntax-rules (collapse superpose Let Let* Match Case If == add-atom quote)
+  (syntax-rules (collapse superpose Let Let* Match Case If == add-atom sequential quote)
     ((_ collapse then else) then)
     ((_ superpose then else) then)
     ((_ Let then else) then)
@@ -114,6 +114,7 @@
     ((_ If then else) then)
     ((_ == then else) then)
     ((_ add-atom then else) then)
+    ((_ sequential then else) then)
     ((_ quote then else) then)
     ((_ arg then else) else)))
 
@@ -155,8 +156,10 @@
 
 (define-syntax Match
   (syntax-rules ()
+    ((_ space binds (resulti ...))
+     (match-let* ((binds (amb1 space))) (list resulti ...)))
     ((_ space binds result)
-     (match-let* ((binds (amb1 space))) (auto-list1 result)))))
+     (match-let* ((binds (amb1 space))) result))))
 
 ;; PROCEDURAL CONSTRUCTS
 
@@ -169,8 +172,8 @@
 
 (define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
   (syntax-rules ()        ;as procedural sequential execution demands :begin"
-    ((_ (expri ...))       ;that's why this construct is defined here instead
+    ((_ (expri ...))      ;that's why this construct is defined here instead
      (begin
        (set! ret '())
-       (sequential-helper expri) ...
+       (sequential-helper (auto-list1 expri)) ...
        (amb1 ret)))))
