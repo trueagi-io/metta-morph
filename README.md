@@ -42,13 +42,15 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 **Current limitations**
 
-- Atoms need to start with ```'```, e.g. ```'fish``` rather than ```fish```. Else Chicken Scheme would think it is a variable, and MeTTa is neutral to whether a ```'``` is in the beginning.
+- Atoms need to start with ```'```, e.g. ```'fish``` rather than ```fish```. Else Chicken Scheme would treat it is a variable, and MeTTa is neutral to whether a ```'``` is in the beginning.
 
 - Variables need to start with ```$``` as MeTTa demands it, and for Chicken Scheme it does not matter.
 
 - When a variable from the outer scope is again used in ```case``` and ```let``` statements, in MeTTa it will be constrained to have the same value as in the outer scope while in Chicken Scheme the outer variable will be ```shadowed``` within the local context. Just do not use same variable names again and both will behave the same. If equality constraint is necessary, just use an ```If``` statement.
 
-- The MeTTa type system is not part of the Mettamorph language subset, but at least primitive (builtin) type annotations will soon also be supported in metta-morph. For now, simply avoid type annotations altogether.
+- The MeTTa type system is only partly supported thus far, primitive (builtin) type annotations for functions are already supported.
+
+- Partial evaluation, e.g. leaving variables as variables when calling a function is not supported in metta-morph.
 
 These limitations are all minor, the biggest incompatibilities have already been resolved with hygienic macros which utilize matching and ambivalence operations, and the speed benefits are more than just "significant".
 
