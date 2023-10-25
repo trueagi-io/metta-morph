@@ -1,7 +1,7 @@
 # metta-morph
 Metta-morph (from Metamorphosis): Macro-based MeTTa to (Chicken) Scheme translator.
 
-The goal is to have a sufficient and fast (hundred of times faster) subset of MeTTa implemented as an elegant Scheme library, rather than full language capability.
+The goal is to have a sufficient and fast (hundreds of times faster) subset of MeTTa implemented as an elegant Scheme library, rather than full language capability.
 
 The thin Scheme compatibility layer is achieved via hygienic macros which utilize matching and ambivalence operations.
 
