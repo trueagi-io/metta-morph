@@ -141,10 +141,21 @@
 
 ;; TYPE SYSTEM
 
+(define-type Atom *)
+(define-type Symbol symbol)
+(define-type Expression list)
+(define-type Bool boolean)
+(define-type Number number)
+(define-type String string)
+
 (define-syntax Typedef
   (syntax-rules ()
-    ((_ arg (-> Ai ... B))
-     (: arg (Ai ... -> B)))))
+    ((_ arg (-> A ... B))
+     (cond-expand
+       (USE_TYPES (: arg (A ... -> B))) (else '())))
+    ((_ arg1 arg2)
+     (cond-expand
+       (USE_TYPES (define-type arg1 arg2)) (else '())))))
 
 ;; SPACES IMPLEMENTATION
 
