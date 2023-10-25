@@ -3,6 +3,8 @@ Metta-morph (from Metamorphosis): Macro-based MeTTa to (Chicken) Scheme translat
 
 Please note: the goal is to have a sufficient and fast (hundred of times faster) subset of MeTTa implemented as an elegant Scheme library, rather than full language capability.
 
+The thin Scheme compatibility layer is achieved via hygienic macros which utilize matching and ambivalence operations.
+
 **Installation**
 
 1. Install MeTTa interpreter: https://github.com/trueagi-io/hyperon-experimental
@@ -48,10 +50,10 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 - When a variable from the outer scope is again used in ```case``` and ```let``` statements, in MeTTa it will be constrained to have the same value as in the outer scope while in Chicken Scheme the outer variable will be ```shadowed``` within the local context. Just do not use same variable names again and both will behave the same. If equality constraint is necessary, just use an ```If``` statement.
 
-- The MeTTa type system is only partly supported thus far, primitive (builtin) type annotations for functions are already supported.
+- Basic type annotations are mostly MeTTa-compatible and used to generate more performant code, but the type system is not fully compatible.
 
-- Partial evaluation, e.g. leaving variables as variables when calling a function is not supported in metta-morph.
+- Partial evaluation, e.g. leaving variables as variables when calling a function is not supported.
 
-These limitations are all minor, the biggest incompatibilities have already been resolved with hygienic macros which utilize matching and ambivalence operations, and the speed benefits are more than just "significant".
+These limitations are relatively minor, since a major useful part of MeTTa is already supported and the toolset allows to ensure compatibility is incrementally preserved during development. Also, compared to the MeTTa interpreter the code executes by a factor of 5-10x faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler.
 
 
