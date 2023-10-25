@@ -52,6 +52,6 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 - Partial evaluation, e.g. leaving variables as variables when calling a function is not supported.
 
-These limitations are relatively minor, since a major useful part of MeTTa is already supported and the toolset allows to ensure compatibility is incrementally preserved during development. Also, compared to the MeTTa interpreter the code executes by a factor of 5-10x faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler.
+These limitations are relatively minor, since a major useful part of MeTTa is already supported and the toolset allows to ensure compatibility is incrementally preserved during development. Also, compared to the MeTTa interpreter the code executes by a factor of 10x+ faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler.
 
 
