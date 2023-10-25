@@ -13,11 +13,9 @@ The thin Scheme compatibility layer is achieved via hygienic macros which utiliz
 
 3. Install the following chicken dependencies:
 ```
-chicken-install amb
 chicken-install srfi-69
-chicken-install srfi-128
-chicken-install srfi-113
 chicken-install matchable
+chicken-install amb
 ```
 
 **Run code file with interpreter**
