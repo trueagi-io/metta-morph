@@ -93,17 +93,6 @@
 
 ;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
 
-(define-syntax auto-list-helper
-  (syntax-rules ()
-    ((_ expr1 ()) ;empty list
-     (list expr1))
-    ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
-     (list (auto-list expr1i ...) (auto-list1 argi) ...))
-    ((_ expr1 argi ...)
-     (if (procedure? expr1)
-         (apply expr1 (list (auto-list1 argi) ...))
-         (list (auto-list1 expr1) (auto-list1 argi) ...)))))
-
 (define-syntax metta-macro-if
   (syntax-rules (collapse superpose Let Let* Match Case If == add-atom remove-atom bind! change-state! sequential quote)
     ((_ collapse then else) then)
@@ -121,6 +110,17 @@
     ((_ sequential then else) then)
     ((_ quote then else) then)
     ((_ arg then else) else)))
+
+(define-syntax auto-list-helper
+  (syntax-rules ()
+    ((_ expr1 ()) ;empty list
+     (list expr1))
+    ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
+     (list (auto-list expr1i ...) (auto-list1 argi) ...))
+    ((_ expr1 argi ...)
+     (if (procedure? expr1)
+         (apply expr1 (list (auto-list1 argi) ...))
+         (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
 (define-syntax auto-list
   (syntax-rules ()
