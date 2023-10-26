@@ -3,6 +3,4 @@
           ($z (superpose $L)))
           ($y $z)))
 
-;<EVALUATIONS>
-
-(wuzaL 2 (3 4))
+!(wuzaL 2 (3 4))

@@ -72,7 +72,7 @@
 
 ;; QUERY STATEMENT EXECUTION OPERATOR
 
-(define (print-all xs)
+(define (print-solutions xs)
   (display "[")
   (define (print-items xs)
     (cond
@@ -89,7 +89,7 @@
 (define-syntax !
   (syntax-rules ()
     ((_ args ...)
-     (print-all (amb-collect (auto-list1 args) ...)))))
+     (print-solutions (amb-collect (auto-list args ...))))))
 
 ;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
 
@@ -105,7 +105,7 @@
          (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
 (define-syntax metta-macro-if
-  (syntax-rules (collapse superpose Let Let* Match Case If == add-atom sequential quote)
+  (syntax-rules (collapse superpose Let Let* Match Case If == add-atom remove-atom bind! change-state! sequential quote)
     ((_ collapse then else) then)
     ((_ superpose then else) then)
     ((_ Let then else) then)
@@ -115,6 +115,9 @@
     ((_ If then else) then)
     ((_ == then else) then)
     ((_ add-atom then else) then)
+    ((_ remove-atom then else) then)
+    ((_ bind! then else) then)
+    ((_ change-state! then else) then)
     ((_ sequential then else) then)
     ((_ quote then else) then)
     ((_ arg then else) else)))
@@ -160,11 +163,30 @@
 ;; SPACES IMPLEMENTATION
 
 (define &self '())
+(define (new-space S) S)
+(define (new-state S) S)
+(define (get-state S) S)
+(define (get-atoms S) (amb1 S))
 
 (define-syntax add-atom
   (syntax-rules ()
     ((_ space atom)
      (begin (set! space (cons (auto-list1 atom) space)) '()))))
+
+(define-syntax remove-atom
+  (syntax-rules ()
+    ((_ space atom)
+     (begin (let ((atm (auto-list1 atom))) (set! space (delete atm space)) '())))))
+
+(define-syntax bind!
+  (syntax-rules ()
+    ((_ space val)
+     (begin (set! space (auto-list1 val)) '()))))
+
+(define-syntax change-state!
+  (syntax-rules ()
+    ((_ var val)
+     (begin (set! var (auto-list1 val)) (list 'State val)))))
 
 (define-syntax Match
   (syntax-rules (MatchChain)

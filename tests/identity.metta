@@ -1,5 +1,3 @@
 (= (f $x) (* $x $x))
 
-;<EVALUATIONS>
-
-(f 1)
+!(f 1)

@@ -4,6 +4,4 @@
 (: reproduce (-> Lion Lion Lion))
 (= (reproduce $x $y) 'childlion)
 
-;<EVALUATIONS>
-
-(reproduce 'lion1 'lion2)
+!(reproduce 'lion1 'lion2)

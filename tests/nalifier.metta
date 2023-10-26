@@ -76,9 +76,7 @@
 
 
 
-;<EVALUATIONS>
-
-(sequential
+!(sequential
   ((add-atom &self ((('dog '--> ('IntSet 'brown)) (1.0 0.9)) (1)))
    (add-atom &self ((('dog '--> ('IntSet 'small)) (1.0 0.9)) (2)))
    (add-atom &self ((('dog '--> ('IntSet 'furry)) (1.0 0.9)) (3)))

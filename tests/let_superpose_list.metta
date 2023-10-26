@@ -3,6 +3,4 @@
           ($z (superpose (4 5))))
           ($y $z)))
 
-;<EVALUATIONS>
-
-(wuza 5)
+!(wuza 5)

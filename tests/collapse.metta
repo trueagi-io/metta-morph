@@ -1,3 +1,1 @@
-;<EVALUATIONS>
-
-(collapse (1 2 3))
+!(collapse (1 2 3))

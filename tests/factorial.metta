@@ -3,6 +3,4 @@
        1
        (* $n (facF (- $n 1)))))
 
-;<EVALUATIONS>
-
-(facF 10)
+!(facF 10)

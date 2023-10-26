@@ -5,6 +5,4 @@
        (TupleConcat ($K) (range (+ $K 1) $N))
        ()))
 
-;<EVALUATIONS>
-
-(range 1 10)
+!(range 1 10)
