@@ -76,23 +76,23 @@
 
 
 
-!(add-atom &self ((('dog '--> ('IntSet 'brown)) (1.0 0.9)) (1)))
-!(add-atom &self ((('dog '--> ('IntSet 'small)) (1.0 0.9)) (2)))
-!(add-atom &self ((('dog '--> ('IntSet 'furry)) (1.0 0.9)) (3)))
-!(add-atom &self ((('dog '--> ('IntSet 'barks)) (1.0 0.9)) (4)))
+((('dog '--> ('IntSet 'brown)) (1.0 0.9)) (1))
+((('dog '--> ('IntSet 'small)) (1.0 0.9)) (2))
+((('dog '--> ('IntSet 'furry)) (1.0 0.9)) (3))
+((('dog '--> ('IntSet 'barks)) (1.0 0.9)) (4))
 
-!(add-atom &self ((('duck '--> ('IntSet 'yellow)) (1.0 0.9)) (5)))
-!(add-atom &self ((('duck '--> ('IntSet 'small)) (1.0 0.9)) (6)))
-!(add-atom &self ((('duck '--> ('IntSet 'feathered)) (1.0 0.9)) (7)))
-!(add-atom &self ((('duck '--> ('IntSet 'quacks)) (1.0 0.9)) (8)))
+((('duck '--> ('IntSet 'yellow)) (1.0 0.9)) (5))
+((('duck '--> ('IntSet 'small)) (1.0 0.9)) (6))
+((('duck '--> ('IntSet 'feathered)) (1.0 0.9)) (7))
+((('duck '--> ('IntSet 'quacks)) (1.0 0.9)) (8))
 
-!(add-atom &self ((('swan '--> ('IntSet 'white)) (1.0 0.9)) (9)))
-!(add-atom &self ((('swan '--> ('IntSet 'big)) (1.0 0.9)) (10)))
-!(add-atom &self ((('swan '--> ('IntSet 'feathered)) (1.0 0.9)) (11)))
+((('swan '--> ('IntSet 'white)) (1.0 0.9)) (9))
+((('swan '--> ('IntSet 'big)) (1.0 0.9)) (10))
+((('swan '--> ('IntSet 'feathered)) (1.0 0.9)) (11))
 
-!(add-atom &self (((('ExtSet 'sam) '--> ('IntSet 'white)) (1.0 0.9)) (12)))
-!(add-atom &self (((('ExtSet 'sam) '--> ('IntSet 'small)) (1.0 0.9)) (13)))
-!(add-atom &self (((('ExtSet 'sam) '--> ('IntSet 'quacks)) (1.0 0.9)) (14)))
+(((('ExtSet 'sam) '--> ('IntSet 'white)) (1.0 0.9)) (12))
+(((('ExtSet 'sam) '--> ('IntSet 'small)) (1.0 0.9)) (13))
+(((('ExtSet 'sam) '--> ('IntSet 'quacks)) (1.0 0.9)) (14))
 
 !(let ($S $EV) (choiceQuery ((('ExtSet 'sam) '--> 'duck)
                              (('ExtSet 'sam) '--> 'swan)

@@ -1,3 +1,3 @@
-awk '{gsub(/\(list /, "(") gsub(/\047/, "")}1' $1 > PROGRAM.metta
+awk '{gsub(/\(list /, "(") gsub(/\047/, ""); if($0 ~ /^[(]/ && !($0 ~ /^[(][:|=]/)) { gsub(/^[(]/, "!(add-atom \\&self (", $0); $0 = $0 ")" }}1' $1 > PROGRAM.metta
 cat mettamorph.metta PROGRAM.metta > RUN.metta
 metta RUN.metta
