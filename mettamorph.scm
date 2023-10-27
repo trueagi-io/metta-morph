@@ -88,8 +88,8 @@
 
 (define-syntax !
   (syntax-rules ()
-    ((_ args ...)
-     (print-solutions (amb-collect (auto-list args ...))))))
+    ((_ argi ...)
+     (print-solutions (amb-collect (auto-list argi ...))))))
 
 ;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
 
