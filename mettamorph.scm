@@ -33,7 +33,7 @@
   (syntax-rules ()
     ((_ (name patterni ...) body)
      (begin
-       (set! &self (cons '(=def (name patterni ...) body) &self)) ;for = in match
+       (hash-table-set! vars '&self (cons '(=def (name patterni ...) body) (hash-table-ref vars '&self)))
        (let ((name (match-lambda* ((patterni ...) (auto-list1 body)))))
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
@@ -94,7 +94,7 @@
 ;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
 
 (define-syntax metta-macro-if
-  (syntax-rules (collapse superpose Let Let* Match Case If == add-atom remove-atom bind! change-state! sequential quote)
+  (syntax-rules (collapse superpose Let Let* Match Case If == sequential quote)
     ((_ collapse then else) then)
     ((_ superpose then else) then)
     ((_ Let then else) then)
@@ -103,10 +103,6 @@
     ((_ Case then else) then)
     ((_ If then else) then)
     ((_ == then else) then)
-    ((_ add-atom then else) then)
-    ((_ remove-atom then else) then)
-    ((_ bind! then else) then)
-    ((_ change-state! then else) then)
     ((_ sequential then else) then)
     ((_ quote then else) then)
     ((_ arg then else) else)))
@@ -162,31 +158,27 @@
 
 ;; SPACES IMPLEMENTATION
 
-(define &self '())
+(define vars (make-hash-table))
+(hash-table-set! vars '&self '())
 (define (new-space S) S)
 (define (new-state S) S)
 (define (get-state S) S)
-(define (get-atoms S) (amb1 S))
+(define (get-atoms S) (amb1 (hash-table-ref vars S)))
 
-(define-syntax add-atom
-  (syntax-rules ()
-    ((_ space atom)
-     (begin (set! space (cons (auto-list1 atom) space)) '()))))
+(define (add-atom space atom)
+  (begin (hash-table-set! vars space (cons atom (hash-table-ref vars space))) '()))
 
-(define-syntax remove-atom
-  (syntax-rules ()
-    ((_ space atom)
-     (begin (let ((atm (auto-list1 atom))) (set! space (delete atm space)) '())))))
+(define (remove-atom space atom)
+  (begin (hash-table-set! vars space (delete atom (hash-table-ref vars space))) '()))
 
-(define-syntax bind!
-  (syntax-rules ()
-    ((_ space val)
-     (begin (set! space (auto-list1 val)) '()))))
+(define (bind! var val)
+  (begin (hash-table-set! vars var val) '()))
 
-(define-syntax change-state!
-  (syntax-rules ()
-    ((_ var val)
-     (begin (set! var (auto-list1 val)) (list 'State val)))))
+(define (change-state! var val)
+  (begin (hash-table-set! vars var val) (list 'State val)))
+
+(define (get-state var)
+  (hash-table-ref vars var))
 
 (define-syntax Match
   (syntax-rules (MatchChain)
@@ -196,7 +188,7 @@
      (Match space bind1 (Match space (MatchChain bindi ...) result)))
     ((_ space binds result)
      (handle-exceptions exn ((amb-failure-continuation))
-                        (match-let* ((binds (amb1 space))) (auto-list1 result))))))
+                        (match-let* ((binds (amb1 (hash-table-ref vars space)))) (auto-list1 result))))))
 
 ;; PROCEDURAL CONSTRUCTS
 
@@ -214,3 +206,7 @@
        (set! ret '())
        (sequential-helper (auto-list1 expri)) ...
        (amb1 ret)))))
+
+;; TRACE
+
+(define (trace! x y) (begin (display x) y))

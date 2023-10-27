@@ -34,7 +34,7 @@
 ;              (($Term ($f $T1 $T2)) (TupleConcat $Ev1 $Ev2)))))
 
 (= (query $Term)
-   (match &self (, (($A $T1) $Ev1) (($B $T2) $Ev2))
+   (match '&self (, (($A $T1) $Ev1) (($B $T2) $Ev2))
           (let ($TermNew $T) (|- ($A $T1) ($B $T2))
                (If (and (== $TermNew $Term) (StampDisjoint $Ev1 $Ev2))
                    (($Term $T) (TupleConcat $Ev1 $Ev2))))))
