@@ -1,9 +1,10 @@
 ;; Run with CHICKEN Scheme!
-(import srfi-1 srfi-69)    ;filter, hashtable
+(import srfi-1 srfi-13 srfi-69)    ;filter, hashtable
 (import amb amb-extras)    ;amb to implement superpose and amb1 to implements its nesting behavior
 (import matchable)         ;let/case constructs as match-lambda with deconstruction
 (import (chicken flonum))  ;floating point options
 (import (chicken type))    ;type system
+(import (chicken string))  ;string conversion
 
 ;; COLLAPSE AND SUPERPOSE
 
@@ -23,7 +24,7 @@
     ((_ ((superpose x) ...))
      (amb x ...))
     ((_ arg)
-     (auto-list1 arg))))
+     (auto-quote-list1 arg))))
 
 ;; FUNCTION DEFINITION IN METTA
 
@@ -34,7 +35,7 @@
     ((_ (name patterni ...) body)
      (begin
        (set! &self (cons '(=def (name patterni ...) body) &self)) ;for = in match
-       (let ((name (match-lambda* ((patterni ...) (auto-list1 body)))))
+       (let ((name (match-lambda* ((patterni ...) (auto-quote-list1 body)))))
             (if (hash-table-exists? functions 'name)
                 (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
                 (hash-table-set! functions 'name (list name))))
@@ -46,14 +47,14 @@
 (define-syntax Let
   (syntax-rules ()
     ((_ var val body)
-     (match-let* ((var (auto-list1 val))) (auto-list1 body)))))
+     (match-let* ((var (auto-quote-list1 val))) (auto-quote-list1 body)))))
 
 (define-syntax Let*
   (syntax-rules ()
     ((_ ((vari vali) ...) body)
-     (match-let* ((vari (auto-list1 vali)) ...) (auto-list1 body)))
+     (match-let* ((vari (auto-quote-list1 vali)) ...) (auto-quote-list1 body)))
     ((_ (((vari1 vari2) vali) ...) body)
-     (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
+     (match-let* (((vari1 vari2) (auto-quote-list1 vali)) ...) (auto-quote-list1 body)))))
 
 ;; SYNTACTIC CONSTRUCTS FOR CHECKING VARIABLES
 
@@ -61,14 +62,14 @@
   (syntax-rules (else)
     ((_ var ((pati bodi) ...))
      (handle-exceptions exn ((amb-failure-continuation))
-                        (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
+                        (match (auto-quote-list1 var) (pati (auto-quote-list1 bodi)) ...)))))
 
 (define-syntax If
   (syntax-rules ()
     ((_ condition thenbody elsebody)
-        (if condition (auto-list1 thenbody) (auto-list1 elsebody)))
+        (if condition (auto-quote-list1 thenbody) (auto-quote-list1 elsebody)))
     ((_ condition thenbody)
-        (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
+        (if condition (auto-quote-list1 thenbody) ((amb-failure-continuation))))))
 
 ;; QUERY STATEMENT EXECUTION OPERATOR
 
@@ -111,16 +112,33 @@
     ((_ quote then else) then)
     ((_ arg then else) else)))
 
+(define-syntax auto-quote-recursive
+ (syntax-rules ()
+    ((_ (argi ...))
+     ((auto-quote argi) ...))
+    ((_ arg)
+     (auto-quote arg))))
+
+(define-syntax auto-quote
+ (syntax-rules ()
+    ((_ (argi ...))
+     (argi ...))
+    ((_ arg)
+     (handle-exceptions exn (quote arg)
+        (if (or (number? arg) (string? arg) (boolean? arg) (string-prefix? "$" (->string arg)))
+            arg
+            (quote arg))))))
+
 (define-syntax auto-list-helper
   (syntax-rules ()
     ((_ expr1 ()) ;empty list
      (list expr1))
     ((_ (expr1i ...) argi ...) ;a nested expression is not a procedure
-     (list (auto-list expr1i ...) (auto-list1 argi) ...))
+     (list (auto-quote-list1 (expr1i ...)) (auto-quote-list1 argi) ...))
     ((_ expr1 argi ...)
-     (if (procedure? expr1)
-         (apply expr1 (list (auto-list1 argi) ...))
-         (list (auto-list1 expr1) (auto-list1 argi) ...)))))
+     (handle-exceptions exn (list (auto-quote-list1 expr1) (auto-quote-list1 argi) ...) (if (procedure? expr1)
+         (apply expr1 (list (auto-quote-list1 argi) ...))
+         (list (auto-quote-list1 expr1) (auto-quote-list1 argi) ...))))))
 
 (define-syntax auto-list
   (syntax-rules ()
@@ -128,8 +146,8 @@
      (list (auto-list1 expr)))
     ((_ expr1 expri ...)
      (metta-macro-if expr1
-         (expr1 expri ...)
-         (auto-list-helper expr1 expri ...)))))
+       (expr1 expri ...)
+       (auto-list-helper expr1 expri ...)))))
 
 (define-syntax auto-list1
    (syntax-rules ()
@@ -137,6 +155,13 @@
      (auto-list vari ...))
     ((_ var1)
      var1)))
+
+(define-syntax auto-quote-list1
+   (syntax-rules ()
+    ((_ (vari ...))
+     (auto-quote (auto-list1 (vari ...))))
+    ((_ var1)
+     (auto-quote var1))))
 
 ;; EQUALITY
 
@@ -171,22 +196,22 @@
 (define-syntax add-atom
   (syntax-rules ()
     ((_ space atom)
-     (begin (set! space (cons (auto-list1 atom) space)) '()))))
+     (begin (set! space (cons (auto-quote-list1 atom) space)) '()))))
 
 (define-syntax remove-atom
   (syntax-rules ()
     ((_ space atom)
-     (begin (let ((atm (auto-list1 atom))) (set! space (delete atm space)) '())))))
+     (begin (let ((atm (auto-quote-list1 atom))) (set! space (delete atm space)) '())))))
 
 (define-syntax bind!
   (syntax-rules ()
     ((_ space val)
-     (begin (set! space (auto-list1 val)) '()))))
+     (begin (set! space (auto-quote-list1 val)) '()))))
 
 (define-syntax change-state!
   (syntax-rules ()
     ((_ var val)
-     (begin (set! var (auto-list1 val)) (list 'State val)))))
+     (begin (set! var (auto-quote-list1 val)) (list 'State val)))))
 
 (define-syntax Match
   (syntax-rules (MatchChain)
@@ -196,7 +221,7 @@
      (Match space bind1 (Match space (MatchChain bindi ...) result)))
     ((_ space binds result)
      (handle-exceptions exn ((amb-failure-continuation))
-                        (match-let* ((binds (amb1 space))) (auto-list1 result))))))
+                        (match-let* ((binds (amb1 space))) (auto-quote-list1 result))))))
 
 ;; PROCEDURAL CONSTRUCTS
 
@@ -212,5 +237,5 @@
     ((_ (expri ...))      ;that's why this construct is defined here instead
      (begin
        (set! ret '())
-       (sequential-helper (auto-list1 expri)) ...
+       (sequential-helper (auto-quote-list1 expri)) ...
        (amb1 ret)))))
