@@ -3,5 +3,5 @@
 
 void CHICKEN_INIT(void)
 {
-	CHICKEN_run(C_toplevel);
+    CHICKEN_run(C_toplevel);
 }
