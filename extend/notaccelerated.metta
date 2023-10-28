@@ -6,3 +6,4 @@
 !(mettamorph test3 'dummy)
 !(mettamorph test4 'dummy)
 !(mettamorph test5 'dummy)
+!(mettamorph test6 'this 'thing)
