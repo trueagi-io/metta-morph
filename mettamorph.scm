@@ -24,8 +24,8 @@
        (USE_TYPES (define-type arg1 arg2)) (else '())))))
 
 
-;; Query statement, execution operator, prining the elements
-(define (print-solutions xs)
+;; Prining the elements / query statement / execution operator
+(define (print-helper xs)
   (display "[")
   (define (print-items xs)
     (cond
@@ -42,14 +42,14 @@
 (define-syntax !
   (syntax-rules ()
     ((_ argi ...)
-     (print-solutions (amb-collect (auto-list argi ...))))))
+     (print-helper (amb-collect (auto-list argi ...))))))
 
 
 ;; Collapse: using Scheme's 'amb-collect' implements MeTTa's collapse
 (define-syntax collapse
   (syntax-rules ()
     ((_ args)
-     (filter (lambda (x) (not (== x (if #f 42))))
+     (filter (lambda (x) (not (== x (if #f 1)))) ; (if #f 1) can be any number here
              (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
 
 ;; Superpose: using Scheme's ambivalence operator 'amb1' implements MeTTa's superpose.
@@ -65,6 +65,7 @@
      (amb x ...))
     ((_ arg)
      (auto-list1 arg))))
+
 
 ;; MeTTa function definition: Creates a hash map where the functions with all possible 
 ;; combinations of arguments are registered as keys. The values are the lists containing 
@@ -82,6 +83,18 @@
                 (hash-table-set! functions 'name (list name))))
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
+
+
+;; MeTTa match expression: using Scheme's match-let* 
+(define-syntax Match
+  (syntax-rules (MatchChain)
+    ((_ space (MatchChain bind1 bind2) result)
+     (Match space bind1 (Match space bind2 result)))
+    ((_ space (MatchChain bind1 bindi ...) result)
+     (Match space bind1 (Match space (MatchChain bindi ...) result)))
+    ((_ space binds result)
+     (handle-exceptions exn ((amb-failure-continuation))
+       (match-let* ((binds (amb1 (hash-table-ref vars space)))) (auto-list1 result))))))
 
 
 ;; MeTTa's Let and Let*: Using Scheme's match-let*
@@ -115,14 +128,15 @@
         (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
 
 
-;; Definition of equality to allow using '==' for MeTTa compatibility
+;; Equality: to allow using '==' for MeTTa compatibility
 (define == equal?)
 
-;; Ttrace 
+
+;; Trace 
 (define (trace! x y) (begin (display x) y))
 
-;; SPACES IMPLEMENTATION
 
+;; SPACES & STATES implementation: adding, removing, binding; changing and getting state
 (define vars (make-hash-table))
 (hash-table-set! vars '&self '())
 (define (new-space S) S)
@@ -146,20 +160,8 @@
   (hash-table-ref vars var))
 
 
-;; MeTTa match expression: using Scheme's match-let* 
-(define-syntax Match
-  (syntax-rules (MatchChain)
-    ((_ space (MatchChain bind1 bind2) result)
-     (Match space bind1 (Match space bind2 result)))
-    ((_ space (MatchChain bind1 bindi ...) result)
-     (Match space bind1 (Match space (MatchChain bindi ...) result)))
-    ((_ space binds result)
-     (handle-exceptions exn ((amb-failure-continuation))
-                        (match-let* ((binds (amb1 (hash-table-ref vars space)))) (auto-list1 result))))))
-
-
 ;; For procudural (sequential) constructs: in Scheme sequential cannot be
-;; superpose as in MeTTa. Procedural sequential execution demands ':begin' 
+;; "superposed" as in MeTTa. Procedural sequential execution demands "begin"
 (define-syntax sequential-helper
   (syntax-rules (do)
     ((_ (do expr))
@@ -168,7 +170,7 @@
      (set! ret (append ret (list expr))))))
 
 (define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
-  (syntax-rules ()        ;as procedural sequential execution demands :begin"
+  (syntax-rules ()        ;as procedural sequential execution demands "begin"
     ((_ (expri ...))      ;that's why this construct is defined here instead
      (begin
        (set! ret '())
@@ -176,10 +178,10 @@
        (amb1 ret)))))
 
 
-;; AUTO-LIST to eliminate the need for distinguishing LIST from FUNCTION call
-;; Returns a list if arg is a list or executes a function if it is a function
+;; AUTO-LIST to eliminate the need for distinguishing LISTs from FUNCTION call
+;; Returns a list if arg is a list or executes a function if arg is a function
 ;; To avoid expansion of a full algorithmic tree and make compiling efficient
-;; MeTTa macros definition is used to limit expansion only to defined macros
+;; MeTTa macros definition is used to limit expansion only to the defined macros
 (define-syntax metta-macro-if
   (syntax-rules (collapse superpose Let Let* Match Case If == sequential quote)
     ((_ collapse then else) then)
@@ -220,3 +222,4 @@
      (auto-list vari ...))
     ((_ var1)
      var1)))
+
