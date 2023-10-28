@@ -1,0 +1,8 @@
+!(extend-py! mettamorph)
+(= (rustmettafunc $a) 42)
+!(mettamorph facF 100)
+!(mettamorph test1 'dummy)
+!(mettamorph test2 'dummy)
+!(mettamorph test3 'dummy)
+!(mettamorph test4 'dummy)
+!(mettamorph test5 'dummy)
