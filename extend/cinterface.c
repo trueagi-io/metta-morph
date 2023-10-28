@@ -1,5 +1,4 @@
 #include <chicken.h>
-#include <assert.h>
 
 void CHICKEN_INIT(void)
 {
