@@ -19,4 +19,7 @@
    ('rustmettafunc 'works))
 
 (= (test6 $x $y)
-   ('indeed $x $y))
+   ($x $y 'works))
+
+(= (test7 ($x $y))
+   ($x $y 'works))

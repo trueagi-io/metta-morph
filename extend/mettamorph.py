@@ -27,7 +27,7 @@ def func_mettamorph(evalstr):
 
 def call_mettamorph(*a):
     tokenizer = Tokenizer()
-    EXPRESSION = "(" + (" ".join([str(x) for x in a])) + ")"
+    EXPRESSION = "(" + (" ".join([str(x).replace("(quote ", "[").replace("(", "(list ").replace("[", "(quote ") for x in a])) + ")"
     parser = SExprParser(str(func_mettamorph(EXPRESSION)))
     return parser.parse(tokenizer)
 
