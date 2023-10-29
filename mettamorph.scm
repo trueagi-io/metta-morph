@@ -6,7 +6,7 @@
 (import (chicken type))    ;type system
 
 
-;; TYPE SYSTEM
+;; Type Definitions
 (define-type Atom *)
 (define-type Symbol symbol)
 (define-type Expression list)
@@ -25,6 +25,11 @@
 
 
 ;; Prining the elements / query statement / execution operator
+(define-syntax !
+  (syntax-rules ()
+    ((_ argi ...)
+     (print-helper (amb-collect (auto-list argi ...))))))
+
 (define (print-helper xs)
   (display "[")
   (define (print-items xs)
@@ -39,10 +44,35 @@
        (print-items (cdr xs)))))
   (print-items xs))
 
-(define-syntax !
+
+;; MeTTa's Let and Let*: Using Scheme's match-let*
+(define-syntax Let
   (syntax-rules ()
-    ((_ argi ...)
-     (print-helper (amb-collect (auto-list argi ...))))))
+    ((_ var val body)
+     (match-let* ((var (auto-list1 val))) (auto-list1 body)))))
+
+(define-syntax Let*
+  (syntax-rules ()
+    ((_ ((vari vali) ...) body)
+     (match-let* ((vari (auto-list1 vali)) ...) (auto-list1 body)))
+    ((_ (((vari1 vari2) vali) ...) body)
+     (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
+
+
+;; MeTTa's case expression 
+(define-syntax Case
+  (syntax-rules (else)
+    ((_ var ((pati bodi) ...))
+     (handle-exceptions exn ((amb-failure-continuation))
+                        (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
+
+
+;; Equality: to allow using '==' for MeTTa compatibility
+(define == equal?)
+
+
+;; Trace 
+(define (trace! x y) (begin (display x) y))
 
 
 ;; Collapse: using Scheme's 'amb-collect' implements MeTTa's collapse
@@ -51,6 +81,7 @@
     ((_ args)
      (filter (lambda (x) (not (== x (if #f 1)))) ; (if #f 1) can be any number here
              (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
+
 
 ;; Superpose: using Scheme's ambivalence operator 'amb1' implements MeTTa's superpose.
 ;;            superpose-helper is for MeTTa's nested superpose statements
@@ -67,11 +98,15 @@
      (auto-list1 arg))))
 
 
-;; MeTTa function definition: Creates a hash map where the functions with all possible 
-;; combinations of arguments are registered as keys. The values are the lists containing 
-;; function's bodies to allow functions with the same definition to appear more than once
-(define functions (make-hash-table)) ; global function variable
+;; Hash-Tables: for keeping Functions, States and Spaces 
+(define functions (make-hash-table))
+(define vars (make-hash-table))
+(hash-table-set! vars '&self '())
 
+
+;; MeTTa function definition: Creates a hash map where the MeTTa functions with all 
+;; arguments are registered as keys. The values are the lists containing function's
+;; bodies to allow functions with the same definition to appear more than once
 (define-syntax =
   (syntax-rules ()
     ((_ (name patterni ...) body)
@@ -97,48 +132,7 @@
        (match-let* ((binds (amb1 (hash-table-ref vars space)))) (auto-list1 result))))))
 
 
-;; MeTTa's Let and Let*: Using Scheme's match-let*
-(define-syntax Let
-  (syntax-rules ()
-    ((_ var val body)
-     (match-let* ((var (auto-list1 val))) (auto-list1 body)))))
-
-(define-syntax Let*
-  (syntax-rules ()
-    ((_ ((vari vali) ...) body)
-     (match-let* ((vari (auto-list1 vali)) ...) (auto-list1 body)))
-    ((_ (((vari1 vari2) vali) ...) body)
-     (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
-
-
-;; MeTTa's case expression 
-(define-syntax Case
-  (syntax-rules (else)
-    ((_ var ((pati bodi) ...))
-     (handle-exceptions exn ((amb-failure-continuation))
-                        (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
-
-
-;; Defined in NARS Utils as alternative 'if' statement
-(define-syntax If
-  (syntax-rules ()
-    ((_ condition thenbody elsebody)
-        (if condition (auto-list1 thenbody) (auto-list1 elsebody)))
-    ((_ condition thenbody)
-        (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
-
-
-;; Equality: to allow using '==' for MeTTa compatibility
-(define == equal?)
-
-
-;; Trace 
-(define (trace! x y) (begin (display x) y))
-
-
-;; SPACES & STATES implementation: adding, removing, binding; changing and getting state
-(define vars (make-hash-table))
-(hash-table-set! vars '&self '())
+;; Spaces & States implementation: addition, removal, binding; changing and getting state
 (define (new-space S) S)
 (define (new-state S) S)
 (define (get-state S) S)
@@ -160,8 +154,17 @@
   (hash-table-ref vars var))
 
 
-;; For procudural (sequential) constructs: in Scheme sequential cannot be
-;; "superposed" as in MeTTa. Procedural sequential execution demands "begin"
+;; Found in NARS Utils as alternative 'if' statement 
+(define-syntax If
+  (syntax-rules ()
+    ((_ condition thenbody elsebody)
+        (if condition (auto-list1 thenbody) (auto-list1 elsebody)))
+    ((_ condition thenbody)
+        (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
+
+
+;; Found in NARS Utils for procudural (sequential) constructs. In Scheme sequential
+;; cannot be "superposed" as in MeTTa. Procedural sequential execution uses "begin"
 (define-syntax sequential-helper
   (syntax-rules (do)
     ((_ (do expr))
