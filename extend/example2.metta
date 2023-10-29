@@ -5,7 +5,6 @@
        1
        (* $n (facF (- $n 1)))))
 ")
-!(import! &self METTAMORPH.metta)
 
 !(facF 42)
 

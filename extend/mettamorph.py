@@ -32,7 +32,7 @@ def call_mettamorph(*a):
     parser = SExprParser(str(func_mettamorph(EXPRESSION)))
     return parser.parse(tokenizer)
 
-def generate_callwrapper(content):
+def inject_calltypewrapper(content):
     wrappers = ""
     for line in content.split("\n"):
         if line.startswith("(= ("):
@@ -54,12 +54,11 @@ def generate_callwrapper(content):
             wrappers += "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
         if line.startswith("(: "): #TODO multiline typedefs (rare but should work nevertheless)
            wrappers += line + "\n"
-    os.system("cp ./../mettamorph.metta ./METTAMORPH.metta")
-    with open("METTAMORPH.metta", "w+") as file:
-        file.write(wrappers)
+    globalmetta.run("!(import ../mettamorph.metta)")
+    globalmetta.run(wrappers)
 
 def call_compilefile(*a):
-    global mettamorphlib
+    global mettamorphlib, globalmetta
     loadfile = a[0][1:-1] if a[0].startswith('"') else a[0]
     if not loadfile.endswith(".metta"):
         content = loadfile
@@ -75,7 +74,7 @@ def call_compilefile(*a):
     else:
         with open(loadfile, "r") as file:
             content = file.read()
-    generate_callwrapper(content)
+    inject_calltypewrapper(content)
     TEMPfiles = loadfile.replace(".metta", "").upper()
     lastmodification = os.path.getmtime(loadfile)
     status, fcompiles = ("success", "COMPILATIONS.json")
@@ -102,10 +101,13 @@ def call_compilefile(*a):
     # Define the argument and return types for the mettamorph function
     mettamorphlib.mettamorph.argtypes = [ctypes.c_char_p]
     mettamorphlib.mettamorph.restype = ctypes.c_char_p
-    return E(S("Compile:"), S(status))
+    return E(S("Compilation:"), S(status))
 
-@register_atoms
-def scheme_atoms():
+globalmetta = None
+@register_atoms(pass_metta=True)
+def scheme_atoms(metta):
+    global globalmetta
+    globalmetta = metta
     call_mettamorph_atom = G(PatternOperation('mettamorph', wrapnpop(call_mettamorph), unwrap=False))
     call_compilefile_atom = G(PatternOperation('compile!', wrapnpop(call_compilefile), unwrap=False))
     return { r"compile!": call_compilefile_atom, r"mettamorph": call_mettamorph_atom }

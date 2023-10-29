@@ -1,6 +1,5 @@
 !(extend-py! mettamorph)
 !(compile! compileme.metta)
-!(import! &self METTAMORPH.metta)
 
 (= (rustmettafunc $a) 42)
 !(facF 100)
