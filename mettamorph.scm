@@ -34,10 +34,10 @@
     ((_ (name patterni ...) body)
      (begin
        (hash-table-set! vars '&self (cons '(=def (name patterni ...) body) (hash-table-ref vars '&self)))
-       (let ((name (match-lambda* ((patterni ...) (auto-list1 body)))))
+       (let ((function (match-lambda* ((patterni ...) (auto-list1 body)))))
             (if (hash-table-exists? functions 'name)
-                (hash-table-set! functions 'name (cons name (hash-table-ref functions 'name)))
-                (hash-table-set! functions 'name (list name))))
+                (hash-table-set! functions 'name (cons function (hash-table-ref functions 'name)))
+                (hash-table-set! functions 'name (list function))))
        (set! name (lambda args (handle-exceptions exn ((amb-failure-continuation))
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
 
