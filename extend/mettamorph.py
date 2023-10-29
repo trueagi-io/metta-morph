@@ -1,4 +1,5 @@
 import os
+import json
 import ctypes
 from ctypes import *
 from hyperon.ext import register_atoms
@@ -21,7 +22,7 @@ def wrapnpop(func):
 def func_mettamorph(evalstr):
     bytes_literal = evalstr.encode('utf-8')
     input_str = c_char_p(bytes_literal)
-    result = mylib.mettamorph(input_str)
+    result = mettamorphlib.mettamorph(input_str)
     result_str = ctypes.string_at(result).decode('utf-8')
     return result_str
 
@@ -31,23 +32,39 @@ def call_mettamorph(*a):
     parser = SExprParser(str(func_mettamorph(EXPRESSION)))
     return parser.parse(tokenizer)
 
+def call_compilefile(*a):
+    global mettamorphlib
+    loadfile = a[0].replace('"', '')
+    TEMPfiles = loadfile.replace(".metta", "").upper()
+    lastmodification = os.path.getmtime(loadfile)
+    status, fcompiles = ("success", "COMPILATIONS.json")
+    if os.path.exists(fcompiles):
+        with open(fcompiles) as file:
+            compilations = json.loads(file.read())
+        if loadfile in compilations and compilations[loadfile] == lastmodification:
+            status = "skipped"
+    else:
+        compilations = dict([])
+    if status != "skipped":
+        cwd = os.getcwd()
+        os.chdir("./../")
+        os.system(f"sh runscheme.sh ./extend/{a[0]} cat-only")
+        os.chdir(cwd)
+        os.system(f"cat ./../RUN.scm cinterface.scm > {TEMPfiles}.scm")
+        os.system(f"csc {TEMPfiles}.scm cinterface.c -shared")
+        compilations[loadfile] = lastmodification
+        with open(fcompiles, 'w') as file:
+             file.write(json.dumps(compilations))
+    # Load the DLL
+    mettamorphlib = ctypes.CDLL(f"{TEMPfiles}.so")
+    result = mettamorphlib.CHICKEN_INIT()
+    # Define the argument and return types for the mettamorph function
+    mettamorphlib.mettamorph.argtypes = [ctypes.c_char_p]
+    mettamorphlib.mettamorph.restype = ctypes.c_char_p
+    return E(S("Compile:"), S(status))
+
 @register_atoms
 def scheme_atoms():
     call_mettamorph_atom = G(PatternOperation('mettamorph', wrapnpop(call_mettamorph), unwrap=False))
-    return { r"mettamorph": call_mettamorph_atom }
-
-if "run-only" not in sys.argv:
-	cwd = os.getcwd()
-	os.chdir("./../")
-	os.system("sh runscheme.sh ./extend/accelerated.metta cat-only")
-	os.chdir(cwd)
-	os.system("cat ./../RUN.scm cinterface.scm > ACCELERATED.scm")
-	os.system("csc ACCELERATED.scm cinterface.c -shared")
-
-# Load the DLL
-mylib = ctypes.CDLL('ACCELERATED.so')
-result = mylib.CHICKEN_INIT()
-
-# Define the argument and return types for the mettamorph function
-mylib.mettamorph.argtypes = [ctypes.c_char_p]
-mylib.mettamorph.restype = ctypes.c_char_p
+    call_compilefile_atom = G(PatternOperation('compile-file!', wrapnpop(call_compilefile), unwrap=False))
+    return { r"compile-file!": call_compilefile_atom, r"mettamorph": call_mettamorph_atom }

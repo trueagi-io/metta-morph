@@ -1,4 +1,6 @@
 !(extend-py! mettamorph)
+!(compile-file! "accelerated.metta")
+
 (= (rustmettafunc $a) 42)
 !(mettamorph facF 100)
 !(mettamorph test1 'dummy)
