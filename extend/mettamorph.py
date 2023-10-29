@@ -34,7 +34,18 @@ def call_mettamorph(*a):
 
 def call_compilefile(*a):
     global mettamorphlib
-    loadfile = a[0].replace('"', '')
+    loadfile = a[0][1:-1]
+    if not loadfile.endswith(".metta"):
+        content = loadfile
+        loadfile = "TEMP.metta"
+        AlreadyWritten = False
+        if os.path.exists(loadfile):
+            with open(loadfile, "r") as file:
+                if content == file.read():
+                    AlreadyWritten = True
+        if not AlreadyWritten:
+            with open(loadfile, "w") as file:
+                file.write(content)
     TEMPfiles = loadfile.replace(".metta", "").upper()
     lastmodification = os.path.getmtime(loadfile)
     status, fcompiles = ("success", "COMPILATIONS.json")
@@ -48,7 +59,7 @@ def call_compilefile(*a):
     if status != "skipped":
         cwd = os.getcwd()
         os.chdir("./../")
-        os.system(f"sh runscheme.sh ./extend/{a[0]} cat-only")
+        os.system(f"sh runscheme.sh ./extend/{loadfile} cat-only")
         os.chdir(cwd)
         os.system(f"cat ./../RUN.scm cinterface.scm > {TEMPfiles}.scm")
         os.system(f"csc {TEMPfiles}.scm cinterface.c -shared")
@@ -66,5 +77,5 @@ def call_compilefile(*a):
 @register_atoms
 def scheme_atoms():
     call_mettamorph_atom = G(PatternOperation('mettamorph', wrapnpop(call_mettamorph), unwrap=False))
-    call_compilefile_atom = G(PatternOperation('compile-file!', wrapnpop(call_compilefile), unwrap=False))
-    return { r"compile-file!": call_compilefile_atom, r"mettamorph": call_mettamorph_atom }
+    call_compilefile_atom = G(PatternOperation('compile!', wrapnpop(call_compilefile), unwrap=False))
+    return { r"compile!": call_compilefile_atom, r"mettamorph": call_mettamorph_atom }

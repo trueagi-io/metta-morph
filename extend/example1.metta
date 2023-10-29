@@ -1,5 +1,6 @@
+!(import! &self ./../mettamorph.metta)
 !(extend-py! mettamorph)
-!(compile-file! "accelerated.metta")
+!(compile! "compileme.metta")
 
 (= (rustmettafunc $a) 42)
 !(mettamorph facF 100)
