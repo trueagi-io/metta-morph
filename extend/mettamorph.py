@@ -32,6 +32,32 @@ def call_mettamorph(*a):
     parser = SExprParser(str(func_mettamorph(EXPRESSION)))
     return parser.parse(tokenizer)
 
+def generate_callwrapper(content):
+    wrappers = ""
+    for line in content.split("\n"):
+        if line.startswith("(= ("):
+            argstr = line.split("(= (")[1]
+            name = argstr.split(" ")[0]
+            i = 0
+            args = "("
+            counter = 1
+            while counter != 0:
+                cur = argstr[i]
+                args += cur
+                if cur == "(":
+                    counter += 1
+                if cur == ")":
+                    counter -= 1
+                if counter == 0:
+                    break
+                i += 1
+            wrappers += "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
+        if line.startswith("(: "): #TODO multiline typedefs (rare but should work nevertheless)
+           wrappers += line + "\n"
+    os.system("cp ./../mettamorph.metta ./METTAMORPH.metta")
+    with open("METTAMORPH.metta", "w+") as file:
+        file.write(wrappers)
+
 def call_compilefile(*a):
     global mettamorphlib
     loadfile = a[0][1:-1] if a[0].startswith('"') else a[0]
@@ -46,6 +72,10 @@ def call_compilefile(*a):
         if not AlreadyWritten:
             with open(loadfile, "w") as file:
                 file.write(content)
+    else:
+        with open(loadfile, "r") as file:
+            content = file.read()
+    generate_callwrapper(content)
     TEMPfiles = loadfile.replace(".metta", "").upper()
     lastmodification = os.path.getmtime(loadfile)
     status, fcompiles = ("success", "COMPILATIONS.json")
