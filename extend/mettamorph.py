@@ -34,7 +34,7 @@ def call_mettamorph(*a):
 
 def call_compilefile(*a):
     global mettamorphlib
-    loadfile = a[0][1:-1]
+    loadfile = a[0][1:-1] if a[0].startswith('"') else a[0]
     if not loadfile.endswith(".metta"):
         content = loadfile
         loadfile = "TEMP.metta"
