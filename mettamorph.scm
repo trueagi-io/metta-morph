@@ -6,18 +6,16 @@
 (import (chicken type))    ;type system
 
 ;; COLLAPSE AND SUPERPOSE
+;""""""""""""""""""""""""
 
+;collapse: using Scheme's 'amb-collect'
 (define-syntax collapse
   (syntax-rules ()
     ((_ args)
      (filter (lambda (x) (not (== x (if #f 42))))
              (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
 
-(define-syntax superpose
-  (syntax-rules ()
-    ((_ args)
-     (amb1 (superpose-helper args)))))
-
+;superpose-helper enforces nested superpose compatibility
 (define-syntax superpose-helper
   (syntax-rules ()
     ((_ ((superpose x) ...))
@@ -25,10 +23,23 @@
     ((_ arg)
      (auto-list1 arg))))
 
-;; FUNCTION DEFINITION IN METTA
+;superpose: using Scheme's ambivalence operator 'amb1'
+(define-syntax superpose
+  (syntax-rules ()
+    ((_ args)
+     (amb1 (superpose-helper args)))))
 
+;; FUNCTION DEFINITION IN METTA
+;""""""""""""""""""""""""""""""
+
+;A hash map where the functions are keyed by their name.
+;The values are the lists containing all functions of same name.
 (define functions (make-hash-table))
 
+;The function is added to the &self space
+;then it is added to the list of functions of same name in the hashmap,
+;whereby function call is carried out by executing (with backtracking)
+;all registered functions of that name.
 (define-syntax =
   (syntax-rules ()
     ((_ (name patterni ...) body)
@@ -42,12 +53,15 @@
                           (apply (amb1 (hash-table-ref functions 'name)) args))))))))
 
 ;; SYNTACTIC CONSTRUCTS FOR DEFINING VARIABLES
+;"""""""""""""""""""""""""""""""""""""""""""""
 
+;Using Scheme's 'match-let*', while omiting the need for double-parenthesis
 (define-syntax Let
   (syntax-rules ()
     ((_ var val body)
      (match-let* ((var (auto-list1 val))) (auto-list1 body)))))
 
+;Simply map to 'match-let*'
 (define-syntax Let*
   (syntax-rules ()
     ((_ ((vari vali) ...) body)
@@ -56,13 +70,9 @@
      (match-let* (((vari1 vari2) (auto-list1 vali)) ...) (auto-list1 body)))))
 
 ;; SYNTACTIC CONSTRUCTS FOR CHECKING VARIABLES
+;"""""""""""""""""""""""""""""""""""""""""""""
 
-(define-syntax Case
-  (syntax-rules (else)
-    ((_ var ((pati bodi) ...))
-     (handle-exceptions exn ((amb-failure-continuation))
-                        (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
-
+;The if-then case causes backtracking in the else branch instead of returning #undefined
 (define-syntax If
   (syntax-rules ()
     ((_ condition thenbody elsebody)
@@ -70,9 +80,18 @@
     ((_ condition thenbody)
         (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
 
-;; QUERY STATEMENT EXECUTION OPERATOR
+;Since case causes an exception when no case is met, we catch it and backtrack instead
+(define-syntax Case
+  (syntax-rules (else)
+    ((_ var ((pati bodi) ...))
+     (handle-exceptions exn ((amb-failure-continuation))
+                        (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
 
-(define (print-solutions xs)
+;; QUERY EXECUTION OPERATOR
+;;"""""""""""""""""""""""""
+
+;Printing all solutions in the list
+(define (print-helper xs)
   (display "[")
   (define (print-items xs)
     (cond
@@ -86,13 +105,18 @@
        (print-items (cdr xs)))))
   (print-items xs))
 
+;Print all solutions after collecting them
 (define-syntax !
   (syntax-rules ()
     ((_ argi ...)
-     (print-solutions (amb-collect (auto-list argi ...))))))
+     (print-helper (amb-collect (auto-list argi ...))))))
 
-;; AUTO-LIST TO ELIMINATE THE NEED FOR LIST-FUNCTIONCALL DISTINCTION
+;; AUTO-LIST TO ELIMINATE THE NEED FOR SYNTACTIC LIST/FUNCTIONCALL DISTINCTION
+;"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+;To avoid exponential expansion of a code tree with mostly unreachable options
+;we use this specialied macro instead of 'if'. Hereby, list/function call resolving is skipped for
+;syntactic constructs as they represent neither a function call nor a list.
 (define-syntax metta-macro-if
   (syntax-rules (collapse superpose Let Let* Match Case If == sequential quote)
     ((_ collapse then else) then)
@@ -107,6 +131,7 @@
     ((_ quote then else) then)
     ((_ arg then else) else)))
 
+;Recursively, returns a list if arg is a list or executes a function if arg is a function
 (define-syntax auto-list-helper
   (syntax-rules ()
     ((_ expr1 ()) ;empty list
@@ -118,6 +143,7 @@
          (apply expr1 (list (auto-list1 argi) ...))
          (list (auto-list1 expr1) (auto-list1 argi) ...)))))
 
+;Recursively, resolves whether it is a syntactic construct or whether to apply list/function call distinction
 (define-syntax auto-list
   (syntax-rules ()
     ((_ expr)
@@ -127,6 +153,7 @@
          (expr1 expri ...)
          (auto-list-helper expr1 expri ...)))))
 
+;same as before but on a single-arg nested expression
 (define-syntax auto-list1
    (syntax-rules ()
     ((_ (vari ...))
@@ -135,11 +162,15 @@
      var1)))
 
 ;; EQUALITY
+;""""""""""
 
+;allow using '==' in the code
 (define == equal?)
 
 ;; TYPE SYSTEM
+;"""""""""""""
 
+;Type Definitions
 (define-type Atom *)
 (define-type Symbol symbol)
 (define-type Expression list)
@@ -147,6 +178,7 @@
 (define-type Number number)
 (define-type String string)
 
+;Letting compiler know of types as well, for potential increased efficiency
 (define-syntax Typedef
   (syntax-rules ()
     ((_ arg (-> A ... B))
@@ -157,29 +189,41 @@
        (USE_TYPES (define-type arg1 arg2)) (else '())))))
 
 ;; SPACES IMPLEMENTATION
+;""""""""""""""""""""""""
 
+;Where all state variables and spaces live, including &self
 (define vars (make-hash-table))
 (hash-table-set! vars '&self '())
-(define (new-space S) S)
-(define (new-state S) S)
-(define (get-state S) S)
-(define (get-atoms S) (amb1 (hash-table-ref vars S)))
 
-(define (add-atom space atom)
-  (begin (hash-table-set! vars space (cons atom (hash-table-ref vars space))) '()))
+;compatibility wrapper to construct states/spaces and retrieving state
+(define (new-space s) s)
+(define (new-state s) s)
+(define (get-state s) s)
 
-(define (remove-atom space atom)
-  (begin (hash-table-set! vars space (delete atom (hash-table-ref vars space))) '()))
+;get-atom returns non-deterministally all items of space s
+(define (get-atoms space) (amb1 (hash-table-ref vars space)))
 
+;bind a new space or state to a symbol var
 (define (bind! var val)
   (begin (hash-table-set! vars var val) '()))
 
+;add an atom to an existing space within the vars structure
+(define (add-atom space atom)
+  (begin (hash-table-set! vars space (cons atom (hash-table-ref vars space))) '()))
+
+;remove an atom from an existing space within the vars structure
+(define (remove-atom space atom)
+  (begin (hash-table-set! vars space (delete atom (hash-table-ref vars space))) '()))
+
+;change an existing state variable within the vars structure
 (define (change-state! var val)
   (begin (hash-table-set! vars var val) (list 'State val)))
 
+;retrieve the state of an existing state variable within the vars structure
 (define (get-state var)
   (hash-table-ref vars var))
 
+;match expression: using Scheme's match-let*
 (define-syntax Match
   (syntax-rules (MatchChain)
     ((_ space (MatchChain bind1 bind2) result)
@@ -191,7 +235,9 @@
                         (match-let* ((binds (amb1 (hash-table-ref vars space)))) (auto-list1 result))))))
 
 ;; PROCEDURAL CONSTRUCTS
+;"""""""""""""""""""""""
 
+;Append expression return value to list unless it is marked to be omitted via 'do'
 (define-syntax sequential-helper
   (syntax-rules (do)
     ((_ (do expr))
@@ -199,14 +245,18 @@
     ((_ expr)
      (set! ret (append ret (list expr))))))
 
-(define-syntax sequential ;sequential cannot be superpose in Scheme as in MeTTa
-  (syntax-rules ()        ;as procedural sequential execution demands :begin"
-    ((_ (expri ...))      ;that's why this construct is defined here instead
+;procedural sequential execution demands 'begin' to cause side-effect
+;and we return all collected return values non-deterministically
+(define-syntax sequential
+  (syntax-rules ()
+    ((_ (expri ...))
      (begin
        (set! ret '())
        (sequential-helper (auto-list1 expri)) ...
        (amb1 ret)))))
 
 ;; TRACE
+;"""""""
 
+;injected debug output for returned expression
 (define (trace! x y) (begin (display x) y))
