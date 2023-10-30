@@ -18,6 +18,48 @@ chicken-install matchable
 chicken-install amb
 ```
 
+**Run part of your code compiled from metta interpreter**
+
+In folder "extend":
+
+compileme.metta:
+```
+(= (facF $n)
+   (If (== $n 0)
+       (test 1)
+       (* $n (facF (- $n 1)))))
+```
+
+yourfile.metta:
+```
+!(extend-py! mettamorph)
+!(compile! compileme.metta)
+!(facF 42)
+```
+
+All functions defined in compile.me will automatically be compiled and callable,
+whereby on next run it will not be compiled again until changes to compileme.metta are made.
+
+Another option is to compile code in-line:
+
+yourfile.metta:
+```
+!(extend-py! mettamorph)
+!(compile! "
+(= (facF $n)
+   (If (== $n 0)
+       (test 1)
+       (* $n (facF (- $n 1)))))
+")
+!(facF 42)
+```
+
+In both cases simply run with
+
+```
+metta yourfile.metta
+```
+
 **Run code file with interpreter**
 
 ```sh run.sh filename.metta```
