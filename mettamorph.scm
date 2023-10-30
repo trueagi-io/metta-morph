@@ -81,8 +81,17 @@
         (if condition (auto-list1 thenbody) ((amb-failure-continuation))))))
 
 ;Since case causes an exception when no case is met, we catch it and backtrack instead
+;additionally we handle %void% case by considering the amount of matched options
+;either returning the voidcase if there was no match, or nondeterministically the matched options
 (define-syntax Case
-  (syntax-rules (else)
+  (syntax-rules (%void%)
+    ((_ var ((%void% voidcase)))
+     (if (eq? 0 (length (amb-collect (auto-list1 var)))) voidcase ((amb-failure-continuation))))
+    ((_ var ((pati bodi) ... (patj bodj) (%void% voidcase)))
+     (let ((options (amb-collect (handle-exceptions exn ((amb-failure-continuation))
+                        (match (auto-list1 var) (pati (auto-list1 bodi)) ... (patj (auto-list1 bodj)))))))
+          (if (eq? 0 (length options))
+              voidcase (amb1 options))))
     ((_ var ((pati bodi) ...))
      (handle-exceptions exn ((amb-failure-continuation))
                         (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
