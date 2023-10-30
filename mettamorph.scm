@@ -127,7 +127,7 @@
 ;we use this specialied macro instead of 'if'. Hereby, list/function call resolving is skipped for
 ;syntactic constructs as they represent neither a function call nor a list.
 (define-syntax metta-macro-if
-  (syntax-rules (collapse superpose Let Let* Match Case If == sequential quote)
+  (syntax-rules (collapse superpose Let Let* Match Case If == sequential quote do trace!)
     ((_ collapse then else) then)
     ((_ superpose then else) then)
     ((_ Let then else) then)
@@ -138,6 +138,8 @@
     ((_ == then else) then)
     ((_ sequential then else) then)
     ((_ quote then else) then)
+    ((_ do then else) then)
+    ((_ trace! then else) then)
     ((_ arg then else) else)))
 
 ;Recursively, returns a list if arg is a list or executes a function if arg is a function
@@ -268,10 +270,13 @@
 (define-syntax do
   (syntax-rules ()
     ((_ arg)
-     (begin arg '()))))
+     (begin (auto-list1 arg) '()))))
 
 ;; TRACE
 ;"""""""
 
 ;injected debug output for returned expression
-(define (trace! x y) (begin (display x) y))
+(define-syntax trace!
+  (syntax-rules ()
+    ((_ x y)
+     (begin (auto-list1 x) (auto-list1 y)))))

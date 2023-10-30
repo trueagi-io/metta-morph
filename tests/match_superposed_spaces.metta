@@ -1,0 +1,5 @@
+!(bind! '&attentional_focus (new-space))
+!(add-atom '&attentional_focus 1)
+!(bind! '&concepts (new-space))
+!(add-atom '&concepts 2)
+!(match (superpose ('&attentional_focus '&concepts)) $1 $1)
