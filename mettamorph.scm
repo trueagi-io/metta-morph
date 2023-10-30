@@ -17,7 +17,7 @@
 
 ;superpose-helper enforces nested superpose compatibility
 (define-syntax superpose-helper
-  (syntax-rules ()
+  (syntax-rules (superpose)
     ((_ ((superpose x) ...))
      (amb x ...))
     ((_ arg)
@@ -254,6 +254,12 @@
        (set! ret '())
        (sequential-helper (auto-list1 expri)) ...
        (amb1 ret)))))
+
+;standalone do also can cause side effects but returns empty result
+(define-syntax do
+  (syntax-rules ()
+    ((_ arg)
+     (begin arg '()))))
 
 ;; TRACE
 ;"""""""
