@@ -54,7 +54,6 @@ def inject_calltypewrapper(content):
             wrappers += "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
         if line.startswith("(: "): #TODO multiline typedefs (rare but should work nevertheless)
            wrappers += line + "\n"
-    globalmetta.run("!(import ../mettamorph.metta)")
     globalmetta.run(wrappers)
 
 def call_compilefile(*a):
@@ -108,6 +107,8 @@ globalmetta = None
 def scheme_atoms(metta):
     global globalmetta
     globalmetta = metta
+    with open("../mettamorph.metta") as file:
+        metta.run(file.read()) #as "!(import ../mettamorph.metta)" doesn't work here
     call_mettamorph_atom = G(PatternOperation('mettamorph', wrapnpop(call_mettamorph), unwrap=False))
     call_compilefile_atom = G(PatternOperation('compile!', wrapnpop(call_compilefile), unwrap=False))
     return { r"compile!": call_compilefile_atom, r"mettamorph": call_mettamorph_atom }
