@@ -16,16 +16,18 @@
              (amb-collect (handle-exceptions exn ((amb-failure-continuation)) args))))))
 
 ;superpose-helper enforces nested superpose compatibility
+;by flatting out the nested superpose calls before passing it to amb
 (define-syntax superpose-helper
   (syntax-rules (superpose)
-    ((_ ((superpose x) ...))
-     (amb x ...))
+    ((_ (superpose (argi ...)))
+     (amb (superpose-helper argi) ...))
     ((_ arg)
      (auto-list1 arg))))
 
-;superpose: using Scheme's ambivalence operator 'amb1'
 (define-syntax superpose
   (syntax-rules ()
+    ((_ (argi ...))
+     (amb (superpose-helper argi) ...))
     ((_ args)
      (amb1 (superpose-helper args)))))
 
@@ -256,21 +258,17 @@
     ((_ expr)
      (set! ret (append ret (list expr))))))
 
-;procedural sequential execution demands 'begin' to cause side-effect
-;and we return all collected return values non-deterministically
+;procedural sequential execution can be superpose here as well
 (define-syntax sequential
   (syntax-rules ()
-    ((_ (expri ...))
-     (begin
-       (set! ret '())
-       (sequential-helper (auto-list1 expri)) ...
-       (amb1 ret)))))
+    ((_ arg)
+     (superpose arg))))
 
-;standalone do also can cause side effects but returns empty result
+;standalone do also can cause side effects but returns no result
 (define-syntax do
   (syntax-rules ()
     ((_ arg)
-     (begin (auto-list1 arg) '()))))
+     (begin (auto-list1 arg) (If #f 42)))))
 
 ;; TRACE
 ;"""""""

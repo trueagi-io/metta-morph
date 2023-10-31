@@ -6,6 +6,8 @@
 
 (: sequential (-> Expression %Undefined%))
 (= (sequential $1) (superpose $1))
+(: do (-> Expression %Undefined%))
+(= (do $1) (case $1 ()))
 
 (= (max $1 $2) (if (> $1 $2) $1 $2))
 (= (min $1 $2) (if (< $1 $2) $1 $2))
