@@ -277,4 +277,4 @@
 (define-syntax trace!
   (syntax-rules ()
     ((_ x y)
-     (begin (display (auto-list1 x)) (auto-list1 y)))))
+     (begin (display (auto-list1 x)) (newline) (auto-list1 y)))))
