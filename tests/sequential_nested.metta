@@ -1,0 +1,13 @@
+!(bind! '&var (new-state 1))
+(= (increment 'dummy) 
+   (superpose ((do (change-state! '&var (+ 1 (get-state '&var))))
+               (get-state '&var))))
+
+!(sequential ((increment 'dummy) (increment 'dummy)))
+!(sequential ((increment 'dummy) (increment 'dummy) (increment 'dummy)))
+!(sequential ((sequential ((increment 'dummy) (increment 'dummy) (increment 'dummy)))))
+!(sequential ((sequential ((increment 'dummy) (increment 'dummy) (increment 'dummy))) (sequential ((increment 'dummy) (increment 'dummy) (increment 'dummy)))))
+!(sequential ((sequential ((increment 'dummy) (increment 'dummy) (increment 'dummy))) (increment 'dummy) (increment 'dummy) (increment 'dummy)))
+!(do (sequential ((sequential ((increment 'dummy) (increment 'dummy) (increment 'dummy))) (increment 'dummy) (increment 'dummy) (increment 'dummy))))
+!(sequential ((change-state! '&var (+ 1 (get-state '&var)))))
+!(get-state '&var)
