@@ -84,13 +84,9 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 **Current limitations**
 
-- Atoms need to start with ```'```, e.g. ```'fish``` rather than ```fish```. Else Chicken Scheme would treat it is a variable, and MeTTa is neutral to whether a ```'``` is in the beginning.
+- When a variable from the outer scope is again used in ```case``` and ```let``` statements, in MeTTa it will be constrained to have the same value as in the outer scope while in Chicken Scheme the outer variable will be ```shadowed``` within the local context. Do not introduce same variable names again in inner scope and both will behave the same. If equality constraint is intended, just use an explicit ```If``` statement.
 
-- Variables need to start with ```$``` as MeTTa demands it, and for Chicken Scheme it does not matter.
-
-- When a variable from the outer scope is again used in ```case``` and ```let``` statements, in MeTTa it will be constrained to have the same value as in the outer scope while in Chicken Scheme the outer variable will be ```shadowed``` within the local context. Just do not use same variable names again and both will behave the same. If equality constraint is necessary, just use an ```If``` statement.
-
-- Basic type annotations are mostly MeTTa-compatible and used to generate more performant code, but the type system is not fully compatible.
+- Basic type annotations are mostly MeTTa-compatible and used to generate more performant code, but the type system is not fully compatible. With Mettamorph as extension library the MeTTa type system can be fully used.
 
 - Partial evaluation, e.g. leaving variables as variables when calling a function is not supported.
 
