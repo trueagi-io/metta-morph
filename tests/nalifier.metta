@@ -15,15 +15,15 @@
 ;;NAL-1
 ;;!Syllogistic rules for Inheritance:
 (= (|- ($T $T1) ($T $T2)) ($T (Truth_Revision $T1 $T2)))
-(= (|- (($a '--> $b) $T1) (($b '--> $c) $T2)) (($a '--> $c) (Truth_Deduction $T1 $T2)))
-(= (|- (($a '--> $b) $T1) (($a '--> $c) $T2)) (($c '--> $b) (Truth_Induction $T1 $T2)))
-(= (|- (($a '--> $c) $T1) (($b '--> $c) $T2)) (($b '--> $a) (Truth_Abduction $T1 $T2)))
+(= (|- (($a --> $b) $T1) (($b --> $c) $T2)) (($a --> $c) (Truth_Deduction $T1 $T2)))
+(= (|- (($a --> $b) $T1) (($a --> $c) $T2)) (($c --> $b) (Truth_Induction $T1 $T2)))
+(= (|- (($a --> $c) $T1) (($b --> $c) $T2)) (($b --> $a) (Truth_Abduction $T1 $T2)))
 
 ;Whether evidence was just counted once
 (= (StampDisjoint $Ev1 $Ev2)
    (== () (collapse (let* (($x (superpose $Ev1))
                            ($y (superpose $Ev2)))
-                          (case (== $x $y) ((True 'overlap)))))))
+                          (case (== $x $y) ((True overlap)))))))
 
 ;actually that is quite cool and 4x faster in MeTTa than below (yet still 3 mal slower than metta-morph with below)
 ;but it depends on more advanced pattern matching features which are not yet in metta-morph
@@ -34,7 +34,7 @@
 ;              (($Term ($f $T1 $T2)) (TupleConcat $Ev1 $Ev2)))))
 
 (= (query $Term)
-   (match '&self (, (($A $T1) $Ev1) (($B $T2) $Ev2))
+   (match &self (, (($A $T1) $Ev1) (($B $T2) $Ev2))
           (let ($TermNew $T) (|- ($A $T1) ($B $T2))
                (If (and (== $TermNew $Term) (StampDisjoint $Ev1 $Ev2))
                    (($Term $T) (TupleConcat $Ev1 $Ev2))))))
@@ -64,37 +64,37 @@
              (reduceBeliefs $revChoiceOrBoth $revi $rest))))
 
 ;an empty event for reduction purposes
-(= (EmptyEvent 'todo) (('x (1.0 0.0)) ()))
+(= (EmptyEvent todo) ((x (1.0 0.0)) ()))
 
 ;evidence query tries to maximize evidence for the passed statement term
-(= (evidenceQuery $Term) (reduceBeliefs RevisionAndChoice (EmptyEvent 'todo) (collapse (query $Term))))
+(= (evidenceQuery $Term) (reduceBeliefs RevisionAndChoice (EmptyEvent todo) (collapse (query $Term))))
 
 ;choice query picks the option of highest truth expectation among the options of different term
 (= (choiceQuery $Terms)
    (let $options (collapse (evidenceQuery (superpose $Terms)))
-        (reduceBeliefs Choice (EmptyEvent 'todo) $options)))
+        (reduceBeliefs Choice (EmptyEvent todo) $options)))
 
 
 
-((('dog '--> ('IntSet 'brown)) (1.0 0.9)) (1))
-((('dog '--> ('IntSet 'small)) (1.0 0.9)) (2))
-((('dog '--> ('IntSet 'furry)) (1.0 0.9)) (3))
-((('dog '--> ('IntSet 'barks)) (1.0 0.9)) (4))
+(((dog --> (IntSet brown)) (1.0 0.9)) (1))
+(((dog --> (IntSet small)) (1.0 0.9)) (2))
+(((dog --> (IntSet furry)) (1.0 0.9)) (3))
+(((dog --> (IntSet barks)) (1.0 0.9)) (4))
 
-((('duck '--> ('IntSet 'yellow)) (1.0 0.9)) (5))
-((('duck '--> ('IntSet 'small)) (1.0 0.9)) (6))
-((('duck '--> ('IntSet 'feathered)) (1.0 0.9)) (7))
-((('duck '--> ('IntSet 'quacks)) (1.0 0.9)) (8))
+(((duck --> (IntSet yellow)) (1.0 0.9)) (5))
+(((duck --> (IntSet small)) (1.0 0.9)) (6))
+(((duck --> (IntSet feathered)) (1.0 0.9)) (7))
+(((duck --> (IntSet quacks)) (1.0 0.9)) (8))
 
-((('swan '--> ('IntSet 'white)) (1.0 0.9)) (9))
-((('swan '--> ('IntSet 'big)) (1.0 0.9)) (10))
-((('swan '--> ('IntSet 'feathered)) (1.0 0.9)) (11))
+(((swan --> (IntSet white)) (1.0 0.9)) (9))
+(((swan --> (IntSet big)) (1.0 0.9)) (10))
+(((swan --> (IntSet feathered)) (1.0 0.9)) (11))
 
-(((('ExtSet 'sam) '--> ('IntSet 'white)) (1.0 0.9)) (12))
-(((('ExtSet 'sam) '--> ('IntSet 'small)) (1.0 0.9)) (13))
-(((('ExtSet 'sam) '--> ('IntSet 'quacks)) (1.0 0.9)) (14))
+((((ExtSet sam) --> (IntSet white)) (1.0 0.9)) (12))
+((((ExtSet sam) --> (IntSet small)) (1.0 0.9)) (13))
+((((ExtSet sam) --> (IntSet quacks)) (1.0 0.9)) (14))
 
-!(let ($S $EV) (choiceQuery ((('ExtSet 'sam) '--> 'duck)
-                             (('ExtSet 'sam) '--> 'swan)
-                             (('ExtSet 'sam) '--> 'dog)))
+!(let ($S $EV) (choiceQuery (((ExtSet sam) --> duck)
+                             ((ExtSet sam) --> swan)
+                             ((ExtSet sam) --> dog)))
       $S)

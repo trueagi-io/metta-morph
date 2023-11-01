@@ -26,9 +26,17 @@ def func_mettamorph(evalstr):
     result_str = ctypes.string_at(result).decode('utf-8')
     return result_str
 
+def quoteSymbol(index, x):
+    if index == 0: #first is function symbol
+        return x
+    if x[0] != "$" and not x.replace("-","").replace(".","").isnumeric() and x!="#f" and x!="#t":
+        return ("'" + x).replace("'(","(").replace("(","(list ").replace(" ", " '")
+    return x
+
 def call_mettamorph(*a):
     tokenizer = Tokenizer()
-    EXPRESSION = "(" + (" ".join([str(x).replace("(quote ", "[").replace("(", "(list ").replace("[", "(quote ") for x in a])) + ")"
+    EXPRESSION = "(" + (" ".join([quoteSymbol(i, str(x)) for i,x in enumerate(a)])) + ")"
+    print(EXPRESSION)
     parser = SExprParser(str(func_mettamorph(EXPRESSION)))
     return parser.parse(tokenizer)
 

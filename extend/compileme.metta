@@ -4,7 +4,7 @@
        (* $n (facF (- $n 1)))))
 
 (= (test1 $x) 
-   'wat)
+   wat)
 
 (= (test2 $x) 
    True)
@@ -13,10 +13,10 @@
    "mettamorph")
 
 (= (test4 $x) 
-   ('good 'works))
+   (good works))
 
 (= (test5 $x) 
-   ('rustmettafunc 'works))
+   (rustmettafunc works))
 
 (= (test6 $x $y)
    ($x $y 'works))
