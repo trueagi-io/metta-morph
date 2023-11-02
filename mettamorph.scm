@@ -162,7 +162,9 @@
 (define-syntax auto-list
   (syntax-rules ()
     ((_ expr)
-     (list (auto-list1 expr)))
+     (if (procedure? expr)
+         (expr)
+         (list (auto-list1 expr))))
     ((_ expr1 expri ...)
      (metta-macro-if expr1
          (expr1 expri ...)
