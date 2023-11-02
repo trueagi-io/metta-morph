@@ -26,7 +26,7 @@ compileme.metta:
 ```
 (= (facF $n)
    (If (== $n 0)
-       (test 1)
+       1
        (* $n (facF (- $n 1)))))
 ```
 
@@ -48,7 +48,7 @@ yourfile.metta:
 !(compile! "
 (= (facF $n)
    (If (== $n 0)
-       (test 1)
+       1
        (* $n (facF (- $n 1)))))
 ")
 !(facF 42)
