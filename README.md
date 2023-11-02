@@ -67,7 +67,7 @@ metta yourfile.metta
 which will produce RUN.scm and RUN.metta from filename.metta and run
 them with the MeTTa interpreter and Chicken Scheme interpreter.
 The output will be timed, and compared with each other, showing either ```==``` or ```!=```.
-If ```!=``` is shown then the recommended practice is to adjust the file by adding list annotations etc. until it will show with ```==```.
+If ```!=``` is shown then the recommended practice is to adjust the file appropriately with limitations in mind, until it will show with ```==```.
 Hence ```run.sh``` is a workable tool to make sure your code is independent from the particular interpreter implementation.
 
 **Compile code file to binary**
