@@ -194,15 +194,38 @@
 (define-type Number number)
 (define-type String string)
 
-;Letting compiler know of types as well, for potential increased efficiency
+;Types defined via Metta type specifier for fast get-types query in addition to inclusion in &self space
+(define types (make-hash-table))
+
+;Letting compiler know of types via syntactic mapping, for potential increased efficiency
 (define-syntax Typedef
   (syntax-rules ()
     ((_ arg (-> A ... B))
-     (cond-expand
-       (USE_TYPES (: arg (A ... -> B))) (else '())))
+     (begin (cond-expand (USE_TYPES (: arg (A ... -> B))) (else '()))
+            (hash-table-set! types 'arg '(-> A ... B))
+            (hash-table-set! vars '&self (cons '(:def arg (-> A ... B)) (hash-table-ref vars '&self)))))
     ((_ arg1 arg2)
-     (cond-expand
-       (USE_TYPES (define-type arg1 arg2)) (else '())))))
+     (begin (if (not (hash-table-exists? types 'arg2))
+                (cond-expand (USE_TYPES (define-type arg2 *)) (else '())))
+            (cond-expand (USE_TYPES (define-type arg1 arg2)) (else '()))
+            (hash-table-set! types 'arg1 'arg2)
+            (hash-table-set! vars '&self (cons '(:def arg1 arg2) (hash-table-ref vars '&self)))))))
+
+;Get the type by looking up its definition and also checking builtin types
+(define (get-type x)
+        (if (hash-table-exists? types x)
+            (hash-table-ref types x)
+            (if (string? x)
+                'String
+                (if (number? x)
+                    'Number
+                    (if (boolean? x)
+                        'Bool
+                        (if (symbol? x)
+                            'Symbol
+                            (if (list? x)
+                                'Expression
+                                '%Undefined%)))))))
 
 ;; SPACES IMPLEMENTATION
 ;""""""""""""""""""""""""

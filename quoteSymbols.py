@@ -7,9 +7,8 @@ with open("RUN.scm") as file:
 lines = code.split("\n")
 
 names = set(["Let*", "Let", "Match", "MatchChain", "If", "Case", "car", "cdr", "-", "+", "*", "/", "and", "or", "not", "trace!", "%Undefined%", "%void%",
-             "Expression",  "%Undefined%", "Atom", "Symbol", "Number", "Typedef", "min", "max", "abs", "collapse", "superpose", 
-             "do", "sequential", "flonum-print-precision",
-             "<", ">", "==", "->", "=", "!", "'=def", "'"])
+             "Typedef", "min", "max", "abs", "collapse", "superpose", "do", "sequential", "flonum-print-precision",
+             "<", ">", "==", "->", "=", "!", "'=def", "':def", "'"])
 for line in lines:
     if line.startswith("(= ("):
         name = line.split("(= (")[1].split(" ")[0].split(")")[0]
@@ -37,6 +36,8 @@ for x in identified_symbols:
 
 newcodefinal = ""
 for line in newcode.split("\n"):
+    if line.startswith("(Typedef "):
+       line = line.replace("'", "")
     newcodefinal += line + "\n"
 
 with open("RUN.scm", "w") as file:
