@@ -26,7 +26,7 @@ compileme.metta:
 ```
 (= (facF $n)
    (If (== $n 0)
-       (test 1)
+       1
        (* $n (facF (- $n 1)))))
 ```
 
@@ -48,7 +48,7 @@ yourfile.metta:
 !(compile! "
 (= (facF $n)
    (If (== $n 0)
-       (test 1)
+       1
        (* $n (facF (- $n 1)))))
 ")
 !(facF 42)
@@ -67,12 +67,12 @@ metta yourfile.metta
 which will produce RUN.scm and RUN.metta from filename.metta and run
 them with the MeTTa interpreter and Chicken Scheme interpreter.
 The output will be timed, and compared with each other, showing either ```==``` or ```!=```.
-If ```!=``` is shown then the recommended practice is to adjust the file by adding list annotations etc. until it will show with ```==```.
+If ```!=``` is shown then the recommended practice is to adjust the file appropriately with limitations in mind, until it will show with ```==```.
 Hence ```run.sh``` is a workable tool to make sure your code is independent from the particular interpreter implementation.
 
 **Compile code file to binary**
 
-```sh build.sh```
+```sh compilescheme.sh```
 
 which will build ```RUN.scm``` into a binary ```RUN``` one can execute with ```./RUN``` or ```time ./RUN```.
 
@@ -84,13 +84,9 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 **Current limitations**
 
-- Atoms need to start with ```'```, e.g. ```'fish``` rather than ```fish```. Else Chicken Scheme would treat it is a variable, and MeTTa is neutral to whether a ```'``` is in the beginning.
+- When a variable from the outer scope is again used in ```case``` and ```let``` statements, in MeTTa it will be constrained to have the same value as in the outer scope while in Chicken Scheme the outer variable will be ```shadowed``` within the local context. Do not introduce same variable names again in inner scope and both will behave the same. If equality constraint is intended, just use an explicit ```If``` statement.
 
-- Variables need to start with ```$``` as MeTTa demands it, and for Chicken Scheme it does not matter.
-
-- When a variable from the outer scope is again used in ```case``` and ```let``` statements, in MeTTa it will be constrained to have the same value as in the outer scope while in Chicken Scheme the outer variable will be ```shadowed``` within the local context. Just do not use same variable names again and both will behave the same. If equality constraint is necessary, just use an ```If``` statement.
-
-- Basic type annotations are mostly MeTTa-compatible and used to generate more performant code, but the type system is not fully compatible.
+- Basic type annotations are mostly MeTTa-compatible and used to generate more performant code, but the type system is not fully compatible. With Mettamorph as extension library the MeTTa type system can be fully used.
 
 - Partial evaluation, e.g. leaving variables as variables when calling a function is not supported.
 
