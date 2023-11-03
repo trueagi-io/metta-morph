@@ -9,9 +9,9 @@ The thin Scheme compatibility layer is achieved via hygienic macros which utiliz
 
 1. Install MeTTa interpreter: https://github.com/trueagi-io/hyperon-experimental
 
-2. Install chicken Scheme: https://www.call-cc.org/
+2. Install Chicken Scheme: https://www.call-cc.org/
 
-3. Install the following chicken dependencies:
+3. Install the following chicken dependencies (install_dependencies.sh):
 ```
 chicken-install srfi-69
 chicken-install matchable
@@ -90,6 +90,6 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 - Partial evaluation, e.g. leaving variables as variables when calling a function is not supported.
 
-These limitations are relatively minor, since a major useful part of MeTTa is already supported and the toolset allows to ensure compatibility is incrementally preserved during development. Also, compared to the MeTTa interpreter the code executes by a factor of 10x+ faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler.
+These limitations are relatively minor, a substantial part of MeTTa is supported. Most importantly, the toolset allows to ensure compatibility with the MeTTa interpreter is incrementally preserved during development and the compiled code can easily be called with the MeTTa interpreter. Compared to the MeTTa interpreter the code executes by a factor of 10x+ faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler.
 
 
