@@ -2,7 +2,7 @@ awk '{gsub("new-space", "new-space ()") gsub(/\(\, /, "(MatchChain ") gsub(/self
 cat mettamorph.scm > RUN.scm
 echo ";__METTACODE__:" >> RUN.scm
 cat PROGRAM.scm >> RUN.scm
-python3 quoteSymbols.py
+python3 quotesymbols.py
 (cd ./temp && cd ..) || mkdir temp
 echo "cat-only" > ./temp/PARAM2_SHOULD
 echo "$2" > ./temp/PARAM2_IS
