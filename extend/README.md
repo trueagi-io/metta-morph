@@ -35,6 +35,6 @@ As you see in test5 in compileme.metta, the compiled code can also invoke MeTTa 
 as the MeTTa interpreter takes care of that when the expression reduces to a function call it notices.
 
 Also you can impose type restrictions in your non-compiled code for compiled functions!
-This allows you to use the full flexibility of the MeTTa type system instead of relying on Mettamorphs more limited subset.
+This allows you to use the full flexibility of the MeTTa type system even for the compiled functions instead of relying on Mettamorphs more limited type system subset.
 
 
