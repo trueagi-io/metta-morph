@@ -92,4 +92,8 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 These limitations are relatively minor, a substantial part of MeTTa is supported. Most importantly, the toolset allows to ensure compatibility with the MeTTa interpreter is incrementally preserved during development and the compiled code can easily be called with the MeTTa interpreter. Compared to the MeTTa interpreter the code executes by a factor of 10x+ faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler.
 
+**Complex example**
 
+The most complex example to date is running full metta-nars (not just minnars.metta and nalifier.metta which is part of the test suite) with Mettamorph.
+It uses the metta-morph branch of metta-nars which only contains minor code modifications to run metta-nars 100 times faster:
+https://github.com/patham9/metta-nars/tree/metta-morph
