@@ -2,7 +2,7 @@ import os
 import time
 import numpy as np
 
-#Tests to run
+#Tests to run:
 tests = [
      "!(factorial 30)",
      "!(range 1 30)",
@@ -10,9 +10,10 @@ tests = [
    """!(StampDisjoint (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30) 
                       (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30))"""
 ]
-runs = 10
+
+#Run and time them:
+runs=10
 print(f"Starting {len(tests)} tests with {runs} runs each, grab a coffee!")
-#Run and time then:
 workdir = os.getcwd()
 for test in tests:
     os.chdir(workdir)
