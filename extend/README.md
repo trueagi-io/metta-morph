@@ -7,7 +7,7 @@ namely the speed where you need it, and 100% MeTTa support where you need it.
 
 Running MeTTa code and compiled MeTTa code in the same file:
 
-``` metta example2.metta``` 
+```metta example2.metta```
 
 Running MeTTa code and a compiled MeTTa file compileme.metta:
 

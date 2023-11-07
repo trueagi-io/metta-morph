@@ -95,6 +95,6 @@ These limitations are relatively minor, a substantial part of MeTTa is supported
 **Complex example**
 
 The most complex example to date is running full metta-nars (not just minnars.metta and nalifier.metta which is part of the test suite) with Mettamorph.
-It uses the metta-morph branch of metta-nars which only contains minor code modifications to run metta-nars 100 times faster:
+It uses the metta-morph branch of metta-nars which only contains minor code modifications to run metta-nars 100 times faster (please see the timing folder for objective quantification):
 https://github.com/patham9/metta-nars/tree/metta-morph
 Run ```sh install_nars.sh``` to obtain it, and the included scripts (especially ```run_scheme_repl_compiled.sh```) show how code concatenation and compilation to a binary with an injected REPL can be controlled.
