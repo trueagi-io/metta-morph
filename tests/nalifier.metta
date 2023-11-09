@@ -25,7 +25,7 @@
                            ($y (superpose $Ev2)))
                           (case (== $x $y) ((True overlap)))))))
 
-;actually that is quite cool and 4x faster in MeTTa than below (yet still 3 mal slower than metta-morph with below)
+;actually that is quite cool and 4x faster in MeTTa than below (yet still 130 times slower than metta-morph with below)
 ;but it depends on more advanced pattern matching features which are not yet in metta-morph
 ;(= (query $Term)
 ;   (match &self (, (= (|- ($A $T1) ($B $T2)) ($Term ($f $T1 $T2)))
