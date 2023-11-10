@@ -34,9 +34,8 @@ def quoteSymbol(index, x):
     return x
 
 def call_mettamorph(*a):
-    tokenizer = Tokenizer()
+    tokenizer = globalmetta.tokenizer()
     EXPRESSION = "(" + (" ".join([quoteSymbol(i, str(x)) for i,x in enumerate(a)])) + ")"
-    print(EXPRESSION)
     parser = SExprParser(str(func_mettamorph(EXPRESSION)))
     return parser.parse(tokenizer)
 
