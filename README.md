@@ -5,6 +5,8 @@ The goal is to have a sufficient and fast (hundreds of times faster) subset of M
 
 The thin Scheme compatibility layer is achieved via hygienic macros which utilize matching and ambivalence operations.
 
+For a good overview, please also see [Metta-morph presentation](https://github.com/patham9/metta-morph/files/13340957/MeTTa-morph.pdf).
+
 **Installation**
 
 1. Install MeTTa interpreter: https://github.com/trueagi-io/hyperon-experimental
@@ -89,6 +91,10 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 - Basic type annotations are mostly MeTTa-compatible and used to generate more performant code, but the type system is not fully compatible. With Mettamorph as extension library the MeTTa type system can be fully used.
 
 - Partial evaluation, e.g. leaving variables as variables when calling a function is not supported.
+
+- For non-deterministic execution, backtracking cannot continue across the MeTTa-MeTTamorph boundary, a collapse before returning is necessary in such cases.
+
+- Mettamorph has its own &self space, but as shown in the examples, interop is supported with wrapper functions.
 
 These limitations are relatively minor, a substantial part of MeTTa is supported. Most importantly, the toolset allows to ensure compatibility with the MeTTa interpreter is incrementally preserved during development and the compiled code can easily be called with the MeTTa interpreter. Compared to the MeTTa interpreter the code executes by a factor of 10x+ faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler (please see the timing folder for objective quantification).
 
