@@ -7,12 +7,12 @@
 ")
 !(bind! &mettaspace (new-space))
 (= (add-atom-metta $x) (add-atom &mettaspace $x))
-(= (get-atoms-metta)  (get-atoms &mettaspace))
+(= (get-atoms-metta) (collapse (get-atoms &mettaspace)))
 
 !(add-atom-metta 42)
 !(add-atom-metta 43)
 !(add-atom-scheme 44)
 !(add-atom-scheme 45)
-!(let $T (TupleConcat (collapse (get-atoms-metta)) (get-atoms-scheme)) (superpose $T))
+!(let $T (TupleConcat (get-atoms-metta) (get-atoms-scheme)) (superpose $T))
 
 
