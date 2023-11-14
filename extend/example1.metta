@@ -2,7 +2,7 @@
 !(compile! compileme.metta)
 
 (= (rustmettafunc $a) 42)
-!(facF 100)
+!(facF 10)
 !(test1 dummy)
 !(test2 dummy)
 !(test3 dummy)
