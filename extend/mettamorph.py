@@ -68,9 +68,14 @@ def inject_calltypewrapper(content):
            wrappers += line + "\n"
     globalmetta.run(wrappers)
 
+compiled = False
 def call_compilefile(*a):
-    global mettamorphlib, globalmetta
-    loadfile = a[0][1:-1] if a[0].startswith('"') else a[0]
+    global mettamorphlib, globalmetta, compiled
+    if compiled:
+        return E(S("Compilation:"), S("unsupported"))
+    compiled = True
+    loadfiletoken = str(a[0]).replace(") (=", ")\n(=").replace(") (:", ")\n(:")
+    loadfile = loadfiletoken[1:-1] if loadfiletoken.startswith('"') or loadfiletoken.startswith('(') else loadfiletoken
     if not loadfile.endswith(".metta"):
         content = loadfile
         loadfile = "TEMP.metta"
