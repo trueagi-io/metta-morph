@@ -5,7 +5,7 @@ The goal is to have a sufficient and fast (hundreds of times faster) subset of M
 
 The thin Scheme compatibility layer is achieved via hygienic macros which utilize matching and ambivalence operations.
 
-For a good overview, please also see [Metta-morph presentation](https://github.com/patham9/metta-morph/files/13340957/MeTTa-morph.pdf).
+For a good overview, please also see [Metta-morph presentation](https://github.com/trueagi-io/metta-morph/files/13344969/MeTTa-morph.pdf).
 
 **Installation**
 
