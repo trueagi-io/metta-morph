@@ -30,12 +30,12 @@ def quoteSymbol(index, x):
     if index == 0: #first is function symbol
         return x
     if x[0] != "$" and not x.replace("-","").replace(".","").isnumeric() and x!="#f" and x!="#t":
-        return ("'" + x).replace("'(","(").replace("(","(list ").replace(" ", " '")
+        return ("'" + x).replace("(","(list ").replace(" ", " '")
     return x
 
 def call_mettamorph(*a):
     tokenizer = globalmetta.tokenizer()
-    EXPRESSION = "(" + (" ".join([quoteSymbol(i, str(x)) for i,x in enumerate(a)])) + ")"
+    EXPRESSION = "(" + (" ".join([quoteSymbol(i, str(x)).replace("'(","(") for i,x in enumerate(a)])) + ")"
     parser = SExprParser(str(func_mettamorph(EXPRESSION)))
     return parser.parse(tokenizer)
 
