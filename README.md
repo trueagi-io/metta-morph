@@ -92,8 +92,6 @@ The file name of tests which led to different outputs with MeTTa and Chicken Sch
 
 - Partial evaluation, e.g. leaving variables as variables when calling a function is not supported.
 
-- For non-deterministic execution, backtracking cannot continue across the MeTTa-MeTTamorph boundary, a collapse before returning is necessary in such cases.
-
 - Mettamorph has its own &self space, but as shown in the examples, interop is supported with wrapper functions.
 
 These limitations are relatively minor, a substantial part of MeTTa is supported. Most importantly, the toolset allows to ensure compatibility with the MeTTa interpreter is incrementally preserved during development and the compiled code can easily be called with the MeTTa interpreter. Compared to the MeTTa interpreter the code executes by a factor of 10x+ faster with the Chicken Scheme interpreter, and usually 200x+ faster with the compiler (please see the timing folder for objective quantification).

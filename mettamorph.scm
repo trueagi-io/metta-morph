@@ -12,8 +12,7 @@
 (define-syntax collapse
   (syntax-rules ()
     ((_ args)
-     (filter (lambda (x) (not (== x (if #f 42))))
-             (amb-collect (handle-exceptions exn ((amb-failure-continuation)) (auto-list1 args)))))))
+     (amb-collect (auto-list1 args)))))
 
 ;superpose-helper enforces nested superpose compatibility
 ;by flatting out the nested superpose calls before passing it to amb

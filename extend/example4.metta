@@ -3,16 +3,16 @@
 !(compile! "
 !(bind! &schemespace (new-space))
 (= (add-atom-scheme $x) (add-atom &schemespace $x))
-(= (get-atoms-scheme) (collapse (get-atoms &schemespace)))
+(= (get-atoms-scheme) (get-atoms &schemespace))
 ")
 !(bind! &mettaspace (new-space))
 (= (add-atom-metta $x) (add-atom &mettaspace $x))
-(= (get-atoms-metta) (collapse (get-atoms &mettaspace)))
+(= (get-atoms-metta) (get-atoms &mettaspace))
 
 !(add-atom-metta 42)
 !(add-atom-metta 43)
 !(add-atom-scheme 44)
 !(add-atom-scheme 45)
-!(let $T (TupleConcat (get-atoms-metta) (get-atoms-scheme)) (superpose $T))
+!(superpose ((get-atoms-metta) (get-atoms-scheme)))
 
 

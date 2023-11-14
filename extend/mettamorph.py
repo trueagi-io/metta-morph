@@ -36,10 +36,12 @@ def quoteSymbol(index, x):
 def call_mettamorph(*a):
     tokenizer = globalmetta.tokenizer()
     EXPRESSION = "(" + (" ".join([quoteSymbol(i, str(x)).replace("'(","(") for i,x in enumerate(a)])) + ")"
-    parser = SExprParser(str(func_mettamorph(EXPRESSION)))
+    parser = SExprParser("(superpose " + str(func_mettamorph(EXPRESSION) + ")"))
     return parser.parse(tokenizer)
 
+wrapperfunctions = set([])
 def inject_calltypewrapper(content):
+    global wrapperfunctions
     wrappers = ""
     for line in content.split("\n"):
         if line.startswith("(= ("):
@@ -58,7 +60,10 @@ def inject_calltypewrapper(content):
                 if counter == 0:
                     break
                 i += 1
-            wrappers += "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
+            wrapperfunction = "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
+            if wrapperfunction not in wrapperfunctions:
+                wrapperfunctions.add(wrapperfunction)
+                wrappers += "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
         if line.startswith("(: "): #TODO multiline typedefs (rare but should work nevertheless)
            wrappers += line + "\n"
     globalmetta.run(wrappers)
@@ -104,7 +109,8 @@ def call_compilefile(*a):
              file.write(json.dumps(compilations))
     # Load the DLL
     mettamorphlib = ctypes.CDLL(f"{TEMPfiles}.so")
-    result = mettamorphlib.CHICKEN_INIT()
+    mettamorphlib.CHICKEN_INIT()
+    mettamorphlib.mattamorph_init()
     # Define the argument and return types for the mettamorph function
     mettamorphlib.mettamorph.argtypes = [ctypes.c_char_p]
     mettamorphlib.mettamorph.restype = ctypes.c_char_p
