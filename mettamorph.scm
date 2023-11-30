@@ -4,6 +4,7 @@
 (import matchable)         ;let/case constructs as match-lambda with deconstruction
 (import (chicken flonum))  ;floating point options
 (import (chicken type))    ;type system
+(import (chicken process) (chicken string) (chicken file posix) srfi-13) ;fork, pipe, file API etc. for hyperpose
 
 ;; COLLAPSE AND SUPERPOSE
 ;""""""""""""""""""""""""
@@ -29,6 +30,45 @@
      (amb (superpose-helper argi) ...))
     ((_ args)
      (amb1 (superpose-helper args)))))
+
+(define-syntax amb-parallel
+  (syntax-rules ()
+    ((_ arg1 arg2)
+     (receive (pipefd0 pipefd1) (create-pipe)
+              (let ((pid (process-fork)))
+                   (if (eq? pid 0)
+                       (let ((pipefd1_port (open-output-file* pipefd1)))
+                            (write (amb-collect arg2) pipefd1_port) ;we can't backtrack into parent so we collect all of this level's results
+                            (close-output-port pipefd1_port)
+                            (exit 0)) ;child is done
+                       (let* ((res1 (amb-collect arg1)) ;we cannot backtrack here either, the child counts on the parent, so we collect all of this level's results
+                              (res2 (read (open-input-file* pipefd0)))) ;after we collected our results we can collect the result of the child
+                             (if (and (null? res1) (null? res2))
+                                 ((amb-failure-continuation))
+                                 (if (null? res1)
+                                     (amb1 res2)
+                                     (if (null? res2)
+                                         (amb1 res1)
+                                         (amb1 (list (amb1 res1) (amb1 res2)))))))))))
+    ((_ arg1 arg2 argi ...)
+     (let ((chain (amb-parallel (amb-collect arg1) (amb-collect (amb-parallel arg2 argi ...)))))
+          (amb1 chain)))))
+
+;hyperpose-helper enforces nested superpose compatibility
+;by flatting out the nested hyperpose calls before passing it to amb-parallel
+(define-syntax hyperpose-helper
+  (syntax-rules (hyperpose)
+    ((_ (hyperpose (argi ...)))
+     (amb ((hyperpose-helper argi) ...)))
+    ((_ arg)
+     (auto-list1 arg))))
+
+(define-syntax hyperpose
+  (syntax-rules ()
+    ((_ (argi ...))
+     (amb-parallel (hyperpose-helper argi) ...))
+    ((_ args)
+     (amb1 (hyperpose-helper args)))))
 
 ;; FUNCTION DEFINITION IN METTA
 ;""""""""""""""""""""""""""""""
@@ -128,9 +168,10 @@
 ;we use this specialied macro instead of 'if'. Hereby, list/function call resolving is skipped for
 ;syntactic constructs as they represent neither a function call nor a list.
 (define-syntax metta-macro-if
-  (syntax-rules (collapse superpose Let Let* Match Case If == sequential quote do trace! and or)
+  (syntax-rules (collapse superpose hyperpose Let Let* Match Case If == sequential quote do trace! and or)
     ((_ collapse then else) then)
     ((_ superpose then else) then)
+    ((_ hyperpose then else) then)
     ((_ Let then else) then)
     ((_ Let* then else) then)
     ((_ Match then else) then)
