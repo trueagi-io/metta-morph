@@ -43,7 +43,7 @@
                             (exit 0)) ;child is done
                        (let* ((res1 (amb-collect arg1)) ;we cannot backtrack here either, the child counts on the parent, so we collect all of this level's results
                               (res2 (read (open-input-file* pipefd0)))) ;after we collected our results we can collect the result of the child
-                             (if (and (null? res1) (null? res2))
+                             (if (and (null? res1) (null? res2)) ;but from here we can backtrack safely yet again
                                  ((amb-failure-continuation))
                                  (if (null? res1)
                                      (amb1 res2)
