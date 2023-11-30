@@ -4,7 +4,7 @@
 (import matchable)         ;let/case constructs as match-lambda with deconstruction
 (import (chicken flonum))  ;floating point options
 (import (chicken type))    ;type system
-(import (chicken process) (chicken string) (chicken file posix) srfi-13) ;fork, pipe, file API etc. for hyperpose
+(import (chicken process) (chicken file posix)) ;fork, pipe, file API for hyperpose
 
 ;; COLLAPSE AND SUPERPOSE
 ;""""""""""""""""""""""""
@@ -345,3 +345,8 @@
   (syntax-rules ()
     ((_ x y)
      (begin (display (auto-list1 x)) (newline) (auto-list1 y)))))
+
+;; MATH
+;"""""""
+
+(define (% a b) (modulo a b))
