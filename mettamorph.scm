@@ -51,8 +51,7 @@
                                          (amb1 res1)
                                          (amb1 (list (amb1 res1) (amb1 res2)))))))))))
     ((_ arg1 arg2 argi ...)
-     (let ((chain (amb-parallel (amb-collect arg1) (amb-collect (amb-parallel arg2 argi ...)))))
-          (amb1 chain)))))
+     (amb1 (amb-parallel (amb-collect arg1) (amb-collect (amb-parallel arg2 argi ...)))))))
 
 ;hyperpose-helper enforces nested superpose compatibility
 ;by flatting out the nested hyperpose calls before passing it to amb-parallel

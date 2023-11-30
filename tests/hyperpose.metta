@@ -11,3 +11,5 @@
 !(hyperpose (1 (If (== 1 2) 1) (If (== 1 2) 1)))
 
 !(hyperpose (1 2 3 4))
+
+!(hyperpose ((1 2) (3 4)))
