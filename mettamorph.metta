@@ -6,6 +6,10 @@
 
 (: sequential (-> Expression %Undefined%))
 (= (sequential $1) (superpose $1))
+
+(: hyperpose (-> Expression %Undefined%))
+(= (hyperpose $1) (superpose $1))
+
 (: do (-> Expression %Undefined%))
 (= (do $1) (case $1 ()))
 
