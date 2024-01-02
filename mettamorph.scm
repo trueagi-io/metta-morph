@@ -289,7 +289,10 @@
 
 ;add an atom to an existing space within the vars structure
 (define (add-atom space atom)
-  (begin (hash-table-set! vars space (cons atom (hash-table-ref vars space))) '()))
+  (let ((space-list (hash-table-ref vars space)))
+    (if (not (memv atom space-list))
+        (hash-table-set! vars space (cons atom space-list))
+        '())))
 
 ;remove an atom from an existing space within the vars structure
 (define (remove-atom space atom)
