@@ -30,10 +30,14 @@ with open("../RUN.scm") as file:
         (display "metta> ")
         (flush-output)
         (let ((input (read)))
-          (let ((result (eval input)))
-            (display result)
-            (newline)
-            (loop)))))
+          ;; Check for end-of-file
+          (if (eof-object? input)
+              (exit)
+              ;; Evaluate and display result
+              (let ((result (eval input)))
+                (display result)
+                (newline)
+                (loop))))))
     (repl)
     """
 with open(CODE_WITH_INJECTED_REPL + "RUN.scm", "r") as file:
