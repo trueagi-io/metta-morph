@@ -2,6 +2,7 @@ import subprocess
 import readline
 import sys
 import os
+import os.path
 
 if len(sys.argv) < 2 or (sys.argv[1] != "compiled" and sys.argv[1] != "interpreted"):
     print('Error: "compiled" or "interpreted" flag expected!')
@@ -41,7 +42,7 @@ with open(CODE_WITH_INJECTED_REPL + "RUN.scm", "w") as file:
     file.write(allcode)
 
 #3. Compile if compilation requested
-if prevcode != allcode and sys.argv[1] == "compiled":
+if (prevcode != allcode or not os.path.isfile(CODE_WITH_INJECTED_REPL + "RUN")) and sys.argv[1] == "compiled":
     os.chdir(CODE_WITH_INJECTED_REPL)
     os.system("sh compile_scheme.sh")
     os.system(workdir)
