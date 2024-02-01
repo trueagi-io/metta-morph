@@ -115,11 +115,9 @@ def call_compilefile(*a):
              file.write(json.dumps(compilations))
     # Load the DLL
     try:
-        shutil.copy(f"{TEMPfiles}.so", "/usr/lib/")
-    except:
-        None
-    current_ld_library_path = os.environ.get('LD_LIBRARY_PATH', '')
-    os.environ['LD_LIBRARY_PATH'] = f"{current_ld_library_path}:{custom_lib_dir}"
+        shutil.copy(f"{TEMPfiles}.so", f"/usr/lib/")
+    except Exception as ex:
+        print(f"//Warning: {TEMPfiles}.so not copied to /usr/lib/ which is fine on Mac but not Linux!\n//Reason:", ex, "\n//Hint: Permission denied? Try sudo or adjust library ld paths!")
     mettamorphlib = ctypes.CDLL(f"{TEMPfiles}.so")
     mettamorphlib.CHICKEN_INIT()
     mettamorphlib.mattamorph_init()
