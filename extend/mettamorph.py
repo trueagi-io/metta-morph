@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import ctypes
 from ctypes import *
 from hyperon.ext import register_atoms
@@ -113,6 +114,12 @@ def call_compilefile(*a):
         with open(fcompiles, 'w') as file:
              file.write(json.dumps(compilations))
     # Load the DLL
+    try:
+        shutil.copy(f"{TEMPfiles}.so", "/usr/lib/")
+    except:
+        None
+    current_ld_library_path = os.environ.get('LD_LIBRARY_PATH', '')
+    os.environ['LD_LIBRARY_PATH'] = f"{current_ld_library_path}:{custom_lib_dir}"
     mettamorphlib = ctypes.CDLL(f"{TEMPfiles}.so")
     mettamorphlib.CHICKEN_INIT()
     mettamorphlib.mattamorph_init()
