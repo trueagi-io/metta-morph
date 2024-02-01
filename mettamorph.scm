@@ -1,4 +1,3 @@
-
 ;; Run with CHICKEN Scheme!
 (import srfi-1 srfi-69)    ;filter, hashtable
 (import amb amb-extras)    ;amb to implement superpose and amb1 to implements its nesting behavior
