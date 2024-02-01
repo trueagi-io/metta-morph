@@ -1,4 +1,4 @@
-!(extend-py! mettamorph)
+!(extend-py! mettamorph.py)
 !(compile! "
 (= (f1 $x) (+ 2 $x))
 (= (use1 $f $arg)

@@ -1,4 +1,4 @@
-!(extend-py! mettamorph)
+!(extend-py! mettamorph.py)
 !(compile! compileme.metta)
 
 (= (rustmettafunc $a) 42)

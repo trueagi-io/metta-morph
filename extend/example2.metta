@@ -1,4 +1,4 @@
-!(extend-py! mettamorph)
+!(extend-py! mettamorph.py)
 !(compile! "
 (= (facF $n)
    (If (== $n 0)

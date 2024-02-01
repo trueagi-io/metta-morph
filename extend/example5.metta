@@ -1,4 +1,4 @@
-!(extend-py! mettamorph)
+!(extend-py! mettamorph.py)
 !(compile! "
 (= (Add $x Z) $x)
 (= (Add $x (S $y)) (Add (S $x) $y))
