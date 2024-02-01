@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import ctypes
 from ctypes import *
 from hyperon.ext import register_atoms
@@ -113,6 +114,10 @@ def call_compilefile(*a):
         with open(fcompiles, 'w') as file:
              file.write(json.dumps(compilations))
     # Load the DLL
+    try:
+        shutil.copy(f"{TEMPfiles}.so", f"/usr/lib/")
+    except Exception as ex:
+        print(f"//Warning: {TEMPfiles}.so not copied to /usr/lib/ which is fine on Mac but not Linux!\n//Reason:", ex, "\n//Hint: Permission denied? Try sudo or adjust library ld paths!")
     mettamorphlib = ctypes.CDLL(f"{TEMPfiles}.so")
     mettamorphlib.CHICKEN_INIT()
     mettamorphlib.mattamorph_init()

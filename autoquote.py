@@ -22,6 +22,8 @@ for line in allcode.split("\n"):
         names = [line.split("(define-syntax ")[1].strip()]
     elif "(syntax-rules (" in line: #Scheme macro keywords
         names = line.split("(syntax-rules (")[1].split(")")[0].split(" ")
+    elif "(foreign-safe-lambda" in line and "(define" in line:
+        names=[line.split("(define ")[1].split("(foreign-safe-lambda")[0].strip()]
     for name in names:
         functions.add(name)
 
