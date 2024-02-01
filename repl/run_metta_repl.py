@@ -34,7 +34,16 @@ if __name__ == "__main__":
     readline.add_history("!(AddBeliefEvent (((cat x sky) --> like) (1.0 0.9)))")
     readline.add_history("!(AddBeliefEvent ((sky --> (IntSet blue)) (1.0 0.9)))")
     readline.add_history("!(EternalQuestion (((ExtSet garfield) x (IntSet blue)) --> like))")
-    with open("./../RUN.metta") as f:
+    for arg in sys.argv:
+        if arg.startswith("suggestion1="):
+            readline.add_history(arg.split("suggestion1=")[1])
+        if arg.startswith("suggestion2="):
+            readline.add_history(arg.split("suggestion2=")[1])
+    filename = "./../RUN.metta"
+    for arg in sys.argv:
+        if arg.startswith("file="):
+            filename = arg.split("file=")[1]
+    with open(filename) as f:
         runner.run(f.read())
     repl.main_loop()
 
