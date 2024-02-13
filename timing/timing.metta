@@ -16,3 +16,11 @@
    (== () (collapse (let* (($x (superpose $Ev1))
                            ($y (superpose $Ev2)))
                           (case (== $x $y) ((True overlap)))))))
+
+(= (fibiter $n $a $b)
+  (If (== $n 0)
+      $a
+      (fibiter (- $n 1) $b (+ $a $b))))
+
+(= (fib $n)
+  (fibiter $n 0 1))
