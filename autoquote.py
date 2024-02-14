@@ -14,6 +14,10 @@ functions = set(["car", "cdr",              #list functions
                  "flonum-print-precision"]) #utility functions
 for line in allcode.split("\n"):
     names = []
+    if line.startswith("(=deterministic ("): #MeTTa functions
+        names = [line.split("(=deterministic (")[1].split(" ")[0].split(")")[0]]
+    if line.startswith("(=memoized ("): #MeTTa functions
+        names = [line.split("(=memoized (")[1].split(" ")[0].split(")")[0]]
     if line.startswith("(= ("): #MeTTa functions
         names = [line.split("(= (")[1].split(" ")[0].split(")")[0]]
     elif line.startswith("(define ("): #Scheme functions

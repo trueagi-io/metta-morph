@@ -353,3 +353,26 @@
 ;"""""""
 
 (define (% a b) (modulo a b))
+
+;; USEFUL ADDITIONS FOR FURTHER SPEEDUP
+;""""""""""""""""""""""""""""""""""""""
+(define cache (make-hash-table))
+
+(define (memoized f)
+  (lambda (n)
+    (let ((key (cons f n)))
+      (if (hash-table-exists? cache key)
+          (hash-table-ref cache key)
+          (let ((result (f n)))
+            (hash-table-set! cache key result)
+            result)))))
+
+(define-syntax =deterministic
+  (syntax-rules ()
+    ((_ (fname args ...) body)
+     (set! fname (lambda (args ...) body)))))
+
+(define-syntax =memoized
+  (syntax-rules ()
+    ((_ (fname args ...) body)
+     (set! fname (memoized (lambda (args ...) body))))))
