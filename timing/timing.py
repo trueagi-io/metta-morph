@@ -39,13 +39,8 @@ for test in tests:
         t2 = time.time()
         os.system("./RUN" + redirectOutput)
         t3 = time.time()
-        
-        #os.system("rm -rf /home/patham9/vspace-metta-benchmark")
-        #os.system("cp -r /home/patham9/vspace-metta /home/patham9/vspace-metta-benchmark")
-        command = "/home/patham9/vspace-metta-benchmark/MeTTa"
-
         # Start the subprocess with pexpect.spawn
-        child = pexpect.spawn(command)
+        child = pexpect.spawn("/home/patham9/vspace-metta-benchmark/MeTTa")
         child.expect('libswipl')
         time.sleep(0.1)
         content = ""
@@ -59,13 +54,11 @@ for test in tests:
             #child.expect(" ")
             res = child.before.decode('utf-8')
             #print("RECEIVED", res)
-        with open("DELETEME.metta", 'w') as f:
-            f.write(content)
         time.sleep(5.0)
         t4 = time.time()
         child.sendline(test.replace("\n", " "))
         child.expect("metta ")
-        print(child.before.decode('utf-8')) 
+        #print(child.before.decode('utf-8')) 
         t5 = time.time()
         # Wait for the prompt
         time_metta.append(t2 - t1)
