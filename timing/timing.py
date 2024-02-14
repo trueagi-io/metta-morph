@@ -35,13 +35,13 @@ for test in tests:
             print(".", end="", flush=True)
         t1 = time.time()
         redirectOutput = "> /dev/null" if run != 0 else ""
-        #os.system("metta RUN.metta" + redirectOutput)
+        os.system("metta RUN.metta" + redirectOutput)
         t2 = time.time()
         os.system("./RUN" + redirectOutput)
         t3 = time.time()
         
-        os.system("rm -rf /home/patham9/vspace-metta-benchmark")
-        os.system("cp -r /home/patham9/vspace-metta /home/patham9/vspace-metta-benchmark")
+        #os.system("rm -rf /home/patham9/vspace-metta-benchmark")
+        #os.system("cp -r /home/patham9/vspace-metta /home/patham9/vspace-metta-benchmark")
         command = "/home/patham9/vspace-metta-benchmark/MeTTa"
 
         # Start the subprocess with pexpect.spawn
@@ -49,15 +49,16 @@ for test in tests:
         child.expect('libswipl')
         time.sleep(0.1)
         content = ""
-        with open("mettamorph.metta") as f:
+        with open("/home/patham9/metta-morph/mettamorph.metta") as f:
             content = f.read() + "\n"
-        with open("./timing/timing.metta") as f:
+        with open("/home/patham9/metta-morph/timing/timing.metta") as f:
             content += f.read()
         for x in content.split("\n"):
-            print("SENT:", x)
+            #print("SENT:", x)
             child.sendline(x)
             #child.expect(" ")
-            print(child.before.decode('utf-8'))
+            res = child.before.decode('utf-8')
+            #print("RECEIVED", res)
         with open("DELETEME.metta", 'w') as f:
             f.write(content)
         time.sleep(5.0)
