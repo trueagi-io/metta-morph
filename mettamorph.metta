@@ -16,3 +16,12 @@
 (= (max $1 $2) (if (> $1 $2) $1 $2))
 (= (min $1 $2) (if (< $1 $2) $1 $2))
 (= (abs $x) (If (< $x 0) (- 0 $x) $x))
+
+;for now, will be removed once the standard version works in mettamorph:
+(= (Tintersection $A $B)
+   (let* (($x (superpose $A))
+          ($y (superpose $B)))
+         (If (== $x $y) $x)))
+
+(= (TuniqueUnion $A $B)
+   (unique (union $A $B)))

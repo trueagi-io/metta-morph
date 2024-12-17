@@ -124,10 +124,10 @@
 ;additionally we handle %void% case by considering the amount of matched options
 ;either returning the voidcase if there was no match, or nondeterministically the matched options
 (define-syntax Case
-  (syntax-rules (%void%)
-    ((_ var ((%void% voidcase)))
+  (syntax-rules (Empty)
+    ((_ var ((Empty voidcase)))
      (if (eq? 0 (length (amb-collect (auto-list1 var)))) (auto-list1 voidcase) ((amb-failure-continuation))))
-    ((_ var ((pati bodi) ... (%void% voidcase)))
+    ((_ var ((pati bodi) ... (Empty voidcase)))
      (let ((options (amb-collect (handle-exceptions exn ((amb-failure-continuation))
                                                     (match (auto-list1 var) (pati (auto-list1 bodi)) ...)))))
           (if (eq? 0 (length options))
@@ -376,3 +376,8 @@
   (syntax-rules ()
     ((_ (fname args ...) body)
      (set! fname (memoized (lambda (args ...) body))))))
+
+(= (intersection $A $B)
+   (let* (($x (collapse $A))
+          ($y (collapse $B)))
+         (If (== $x $y) (superpose $x))))
