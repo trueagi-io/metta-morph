@@ -291,7 +291,7 @@
 (define (add-atom space atom)
   (let ((space-list (hash-table-ref vars space)))
     (if (not (memv atom space-list))
-        (hash-table-set! vars space (cons atom space-list))
+        (begin (hash-table-set! vars space (cons atom space-list)) '())
         '())))
 
 ;remove an atom from an existing space within the vars structure
@@ -319,6 +319,9 @@
 
 ;; PROCEDURAL CONSTRUCTS
 ;"""""""""""""""""""""""
+
+;Search cut:
+(define empty amb-failure-continuation)
 
 ;Append expression return value to list unless it is marked to be omitted via 'do'
 (define-syntax sequential-helper

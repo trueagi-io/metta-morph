@@ -94,6 +94,8 @@
 ((((ExtSet sam) --> (IntSet small)) (1.0 0.9)) (13))
 ((((ExtSet sam) --> (IntSet quacks)) (1.0 0.9)) (14))
 
+(flonum-print-precision 16)
+
 !(let ($S $EV) (choiceQuery (((ExtSet sam) --> duck)
                              ((ExtSet sam) --> swan)
                              ((ExtSet sam) --> dog)))

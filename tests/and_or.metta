@@ -1,1 +1,1 @@
-!(If (or (and True False) True) 1 2)
+!(if (or (and True False) True) 1 2)

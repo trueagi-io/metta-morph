@@ -1,4 +1,4 @@
-!(extend-py! mettamorph.py)
+!(import! &self mettamorph)
 !(compile! (
 (= (test1) 42)
 (: test2 (-> Number Number))

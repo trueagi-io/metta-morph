@@ -1,5 +1,5 @@
 (= (TupleConcat $Ev1 $Ev2) (collapse (superpose ((superpose $Ev1) (superpose $Ev2)))))
-!(extend-py! mettamorph.py)
+!(import! &self mettamorph)
 !(compile! "
 !(bind! &schemespace (new-space))
 (= (add-atom-scheme $x) (add-atom &schemespace $x))

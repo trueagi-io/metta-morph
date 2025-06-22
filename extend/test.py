@@ -15,7 +15,7 @@ print("Testing:", sys.argv[1])
 newfile = ""
 for line in basefile.split("\n"):
     if not line.startswith('")') and not line.startswith("))") and \
-       not line.startswith("!(compile! ") and not line.startswith("!(extend-py mettamorph)"):
+       not line.startswith("!(compile! "):
            newfile += line + "\n"
     if "!(compile! " in line and ".metta)" in line:
         includefile = "./extend/" + line.split("!(compile! ")[1].split(")")[0]
@@ -48,4 +48,3 @@ OUTPUT_IS = SORT_LINES(OUTPUT_IS)
 OUTPUT_SHOULD = SORT_LINES(OUTPUT_SHOULD)
 if OUTPUT_IS != OUTPUT_SHOULD:
     print("FAILED:", filename)
-
