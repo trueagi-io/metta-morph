@@ -20,8 +20,12 @@ for line in allcode.split("\n"):
         names = [line.split("(=memoized (")[1].split(" ")[0].split(")")[0]]
     if line.startswith("(= ("): #MeTTa functions
         names = [line.split("(= (")[1].split(" ")[0].split(")")[0]]
-    elif line.startswith("(define ("): #Scheme functions
-        names = [line.split("(define (")[1].split(" ")[0].split(")")[0]]
+    elif line.startswith("(define "): #Scheme definitions
+        rest = line.split("(define ")[1].strip()
+        if rest.startswith("("): #function definition
+            names = [rest.split("(")[1].split(" ")[0].split(")")[0]]
+        else: #basic definition
+            names = [rest.split(" ")[0]]
     elif line.startswith("(define-syntax "): #Scheme macros
         names = [line.split("(define-syntax ")[1].strip()]
     elif "(syntax-rules (" in line: #Scheme macro keywords

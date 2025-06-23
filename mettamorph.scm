@@ -384,3 +384,9 @@
   (syntax-rules ()
     ((_ (fname args ...) body)
      (set! fname (memoized (lambda (args ...) body))))))
+
+;; SCHEME FUNCTIONS DIRECT USAGE
+;"""""""""""""""""""""""""""""""
+(define index-atom list-ref)
+(define car-atom car)
+(define cdr-atom cdr)
