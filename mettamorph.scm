@@ -167,7 +167,7 @@
 ;we use this specialied macro instead of 'if'. Hereby, list/function call resolving is skipped for
 ;syntactic constructs as they represent neither a function call nor a list.
 (define-syntax metta-macro-if
-  (syntax-rules (collapse superpose hyperpose Let Let* Match Case If == sequential quote do trace! and or)
+  (syntax-rules (collapse superpose hyperpose Let Let* Match Case If == sequential quote do trace! and or unique subtraction)
     ((_ collapse then else) then)
     ((_ superpose then else) then)
     ((_ hyperpose then else) then)
@@ -183,6 +183,8 @@
     ((_ trace! then else) then)
     ((_ and then else) then)
     ((_ or then else) then)
+    ((_ unique then else) then)
+    ((_ subtraction then else) then)
     ((_ arg then else) else)))
 
 ;Recursively, returns a list if arg is a list or executes a function if arg is a function
@@ -384,3 +386,39 @@
   (syntax-rules ()
     ((_ (fname args ...) body)
      (set! fname (memoized (lambda (args ...) body))))))
+
+;; SET OPERATIONS
+;""""""""""""""""
+
+;Check recursively if the first element is in the rest of the list, omit it if it is
+(define (unique-helper A)
+   (If (== A '())
+       '()
+       (If (and (pair? A) (member (car A) (cdr A)))
+           (unique-helper (cdr A))
+           (cons (car A) (unique-helper (cdr A))))))
+
+;Syntax construct for unique (room for optimization: use hashmap)
+(define-syntax unique
+  (syntax-rules ()
+    ((_ args)
+     (amb1 (unique-helper (amb-collect (auto-list1 args)))))))
+
+;Subtraction
+(define (subtraction-helper A B)
+  (filter (lambda (x) (not (member x B))) A))
+
+(define-syntax subtraction
+  (syntax-rules ()
+    ((_ arg1 arg2)
+     (amb1 (subtraction-helper (amb-collect (auto-list1 arg1)) (amb-collect (auto-list1 arg2)))))))
+
+;Intersection definition (room for optimization: use hashmap)
+(= (intersection $A $B)
+   (Let* (($x (collapse $A))
+          ($y (collapse $B)))
+         (If (== $x $y) (superpose $x))))
+
+;Union definition
+(= (union $A $B)
+   (superpose ($A $B)))
