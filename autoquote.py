@@ -6,12 +6,10 @@ basecode, usercode = allcode.split(";__METTACODE__:")
 usercode_nocomments = "\n".join([line.split(";")[0] for line in usercode.split("\n")])
 
 #2. Starting from a list of builtin functions we automatically add the defined MeTTa and Scheme functions&macros:
-functions = set(["car", "cdr",              #list functions
-                 "-", "+", "*", "/",        #arithmetic functions
+functions = set(["-", "+", "*", "/",        #arithmetic functions
                  "and", "or", "not",        #logical functions
                  "min", "max", "abs",       #math functions
-                 "<", ">", "==",            #comparison functions
-                 "flonum-print-precision"]) #utility functions
+                 "<", ">"])                  #comparison functions
 for line in allcode.split("\n"):
     names = []
     if line.startswith("(=deterministic ("): #MeTTa functions
@@ -33,7 +31,8 @@ for line in allcode.split("\n"):
     elif "(foreign-safe-lambda" in line and "(define" in line:
         names=[line.split("(define ")[1].split("(foreign-safe-lambda")[0].strip()]
     for name in names:
-        functions.add(name)
+        if name:
+            functions.add(name)
 
 #3. We now check for yet unquoted symbols:
 identified_symbols = set([x for x in usercode_nocomments.replace("(", " ").replace(")"," ").replace("\n","").split(" ") \
