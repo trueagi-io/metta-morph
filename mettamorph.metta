@@ -1,7 +1,7 @@
-(: If (-> Bool Expression Expression))
+(: If (-> Bool Atom $t))
 (= (If True $then) $then)
 (= (If False $then) (empty))
-(: If (-> Bool Expression Expression Expression))
+(: If (-> Bool Atom Atom $t))
 (= (If $cond $then $else) (if $cond $then $else))
 
 (: sequential (-> Expression %Undefined%))
