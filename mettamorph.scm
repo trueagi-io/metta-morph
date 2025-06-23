@@ -387,6 +387,7 @@
 
 ;; SCHEME FUNCTIONS DIRECT USAGE (makes MeTTa aware of the Scheme function)
 ;"""""""""""""""""""""""""""""""
+
 (define flonum-print-precision flonum-print-precision)
 (define index-atom list-ref)
 (define car-atom car)
