@@ -78,7 +78,7 @@ def call_compilefile(*a):
     loadfiletoken = str(a[0]).replace(") (=", ")\n(=").replace(") (:", ")\n(:")
     loadfile = loadfiletoken[1:-1] if loadfiletoken.startswith('"') or loadfiletoken.startswith('(') else loadfiletoken
     if not loadfile.endswith(".metta"):
-        content = loadfile
+        content = loadfile.encode().decode('unicode_escape')
         loadfile = "TEMP.metta"
         AlreadyWritten = False
         if os.path.exists(loadfile):
