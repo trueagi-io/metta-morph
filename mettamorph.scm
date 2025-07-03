@@ -320,9 +320,6 @@
 ;; PROCEDURAL CONSTRUCTS
 ;"""""""""""""""""""""""
 
-;Search cut:
-(define empty amb-failure-continuation)
-
 ;Append expression return value to list unless it is marked to be omitted via 'do'
 (define-syntax sequential-helper
   (syntax-rules (do)
@@ -342,6 +339,9 @@
   (syntax-rules ()
     ((_ arg)
      (begin (auto-list1 arg) (If #f 42)))))
+
+;Search cut:
+(define (empty) ((amb-failure-continuation)))
 
 ;; TRACE
 ;"""""""
