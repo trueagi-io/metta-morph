@@ -200,6 +200,8 @@
 ;Recursively, resolves whether it is a syntactic construct or whether to apply list/function call distinction
 (define-syntax auto-list
   (syntax-rules ()
+    ((_)
+     ((amb-failure-continuation)))
     ((_ expr)
      (if (procedure? expr)
          (expr)
