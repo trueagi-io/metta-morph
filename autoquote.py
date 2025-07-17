@@ -9,7 +9,7 @@ usercode_nocomments = "\n".join([line.split(";")[0] for line in usercode.split("
 functions = set(["-", "+", "*", "/",        #arithmetic functions
                  "and", "or", "not",        #logical functions
                  "min", "max", "abs",       #math functions
-                 "<", ">"])                  #comparison functions
+                 "<", ">", "<=", ">="])     #comparison functions
 for line in allcode.split("\n"):
     names = []
     if line.startswith("(=deterministic ("): #MeTTa functions

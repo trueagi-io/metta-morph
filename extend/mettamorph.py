@@ -78,7 +78,7 @@ def call_compilefile(*a):
     loadfiletoken = str(a[0]).replace(") (=", ")\n(=").replace(") (:", ")\n(:")
     loadfile = loadfiletoken[1:-1] if loadfiletoken.startswith('"') or loadfiletoken.startswith('(') else loadfiletoken
     if not loadfile.endswith(".metta"):
-        content = loadfile.encode().decode('unicode_escape')
+        content = loadfile.replace("\\n", "\n")
         loadfile = "TEMP.metta"
         AlreadyWritten = False
         if os.path.exists(loadfile):
@@ -107,7 +107,7 @@ def call_compilefile(*a):
         os.chdir("./../")
         os.system(f"sh run_scheme.sh ./extend/{loadfile} cat-only")
         os.chdir(cwd)
-        Flags = "-O4" #please see compile_scheme.sh for even better optimization flags!
+        Flags = "-O3" #please see compile_scheme.sh for even better optimization flags!
         os.system(f"cat ./../RUN.scm cinterface.scm > {TEMPfiles}.scm")
         os.system(f'csc {Flags} -DUSE_TYPES {TEMPfiles}.scm cinterface.c -shared || (echo "\nERROR IN TYPE DEFINITIONS ENCOUNTERED!! COMPILING WITHOUT TYPE INFO NOW..." && csc {Flags} {TEMPfiles}.scm cinterface.c -shared)')
         compilations[loadfile] = lastmodification
