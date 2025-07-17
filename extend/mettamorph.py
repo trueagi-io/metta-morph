@@ -43,31 +43,62 @@ def call_mettamorph(*a):
 wrapperfunctions = set([])
 def inject_calltypewrapper(content):
     global wrapperfunctions
+    def _split_top(expr: str):
+        parts, depth, start = [], 0, 0
+        for i, ch in enumerate(expr):
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+            elif ch == ' ' and depth == 0:
+                if start != i:
+                    parts.append(expr[start:i])
+                start = i + 1
+        tail = expr[start:].strip()
+        if tail:
+            parts.append(tail)
+        return parts
+    def _grab_head(lines, idx):
+        line = lines[idx]
+        pos = line.find("(= ")
+        pos = line.find("(", pos + 3)          # first '(' after "(= "
+        head, depth, j, k = [], 0, idx, pos
+        while j < len(lines):
+            l = lines[j]
+            while k < len(l):
+                c = l[k]
+                head.append(c)
+                if c == '(':
+                    depth += 1
+                elif c == ')':
+                    depth -= 1
+                    if depth == 0:             # outer head closed
+                        return "".join(head)[1:-1], j + 1
+                k += 1
+            head.append('\n')
+            j += 1
+            k = 0
+        raise RuntimeError("unbalanced head")
     wrappers = ""
-    for line in content.split("\n"):
-        if line.startswith("(= ("):
-            argstr = line.split("(= (")[1]
-            name = argstr.split(" ")[0]
-            i = 0
-            args = "("
-            counter = 1
-            while counter != 0:
-                cur = argstr[i]
-                args += cur
-                if cur == "(":
-                    counter += 1
-                if cur == ")":
-                    counter -= 1
-                if counter == 0:
-                    break
-                i += 1
-            wrapperfunction = "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
-            if wrapperfunction not in wrapperfunctions:
-                wrapperfunctions.add(wrapperfunction)
-                wrappers += "(= " + args + " (mettamorph " + name + " " + " ".join(args.split(" ")[1:]) + ")\n"
-        if line.startswith("(: "): #TODO multiline typedefs (rare but should work nevertheless)
-           wrappers += line + "\n"
-    globalmetta.run(wrappers)
+    lines = content.splitlines()
+    i = 0
+    while i < len(lines):
+        stripped = lines[i].lstrip()
+        if stripped.startswith("(= ("):
+            head, i = _grab_head(lines, i)
+            flat = " ".join(head.split())
+            toks = _split_top(flat)
+            wrap = f"(= ({flat}) (mettamorph {toks[0]} {' '.join(toks[1:])}))\n"
+            if wrap not in wrapperfunctions:
+                wrapperfunctions.add(wrap)
+                wrappers += wrap
+        elif stripped.startswith("(: "):
+            wrappers += lines[i] + "\n"
+            i += 1
+        else:
+            i += 1
+    if wrappers.strip():
+        globalmetta.run(wrappers)
 
 compiled = False
 def call_compilefile(*a):
